@@ -1,4 +1,4 @@
-import { Home, Building2, Users, Calendar, DollarSign, Award, Heart, Network, BarChart3, Settings, FileText, MessageSquare, Building, Trophy } from "lucide-react";
+import { Home, Building2, Users, Calendar, DollarSign, Award, Heart, Network, BarChart3, Settings, FileText, Building, Trophy, Shield, Hash, ScrollText, UserCog } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
   Sidebar,
@@ -26,8 +26,15 @@ const mainNavItems = [
   { title: "Relationships", url: "/relationships", icon: Network },
 ];
 
+const adminNavItems = [
+  { title: "Channel Management", url: "/channels", icon: Hash },
+  { title: "Moderation", url: "/moderation", icon: Shield },
+  { title: "Legal Disclaimers", url: "/legal-disclaimers", icon: ScrollText },
+];
+
 const secondaryNavItems = [
   { title: "Reports", url: "/reports", icon: BarChart3 },
+  { title: "User Preferences", url: "/user-preferences", icon: UserCog },
   { title: "Settings", url: "/settings", icon: Settings },
   { title: "Roles & Permissions", url: "/roles-permissions", icon: Settings },
 ];
@@ -55,6 +62,28 @@ export function AdminSidebar() {
                     <NavLink
                       to={item.url}
                       end={item.url === "/"}
+                      className="hover:bg-sidebar-accent"
+                      activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
+                    >
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.title}</span>
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Administration</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {adminNavItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <NavLink
+                      to={item.url}
                       className="hover:bg-sidebar-accent"
                       activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
                     >
