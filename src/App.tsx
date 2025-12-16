@@ -27,6 +27,12 @@ import Moderation from "./pages/Moderation";
 import ChannelManagement from "./pages/ChannelManagement";
 import LegalDisclaimers from "./pages/LegalDisclaimers";
 import UserPreferences from "./pages/UserPreferences";
+import MembershipManagement from "./pages/MembershipManagement";
+import RetireeMarketplace from "./pages/RetireeMarketplace";
+import OnboardingWorkflow from "./pages/OnboardingWorkflow";
+import SponsorAnalytics from "./pages/SponsorAnalytics";
+import CityCollaborations from "./pages/CityCollaborations";
+import GovBotLibrarian from "./pages/GovBotLibrarian";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -61,6 +67,12 @@ const App = () => (
           <Route path="/channels" element={<AdminLayout><ChannelManagement /></AdminLayout>} />
           <Route path="/legal-disclaimers" element={<AdminLayout><LegalDisclaimers /></AdminLayout>} />
           <Route path="/user-preferences" element={<AdminLayout><UserPreferences /></AdminLayout>} />
+          <Route path="/membership" element={<AdminLayout><MembershipManagement /></AdminLayout>} />
+          <Route path="/retiree-marketplace" element={<AdminLayout><RetireeMarketplace /></AdminLayout>} />
+          <Route path="/onboarding" element={<AdminLayout><OnboardingWorkflow /></AdminLayout>} />
+          <Route path="/sponsor-analytics" element={<AdminLayout><SponsorAnalytics /></AdminLayout>} />
+          <Route path="/collaborations" element={<AdminLayout><CityCollaborations /></AdminLayout>} />
+          <Route path="/govbot" element={<AdminLayout><GovBotLibrarian /></AdminLayout>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

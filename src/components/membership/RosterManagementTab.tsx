@@ -1,0 +1,257 @@
+import { useState, useCallback } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Upload, Download, FileSpreadsheet, CheckCircle, XCircle, Clock, AlertTriangle, Users } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { format } from "date-fns";
+import { toast } from "sonner";
+
+interface RosterUpload {
+  id: string;
+  file_name: string;
+  status: string;
+  total_records: number;
+  new_users: number;
+  updated_users: number;
+  deactivated_users: number;
+  errors: unknown[];
+  created_at: string;
+  processed_at: string | null;
+}
+
+const statusColors: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+  pending: "secondary",
+  processing: "outline",
+  completed: "default",
+  failed: "destructive",
+};
+
+const statusIcons: Record<string, React.ReactNode> = {
+  pending: <Clock className="h-3 w-3" />,
+  processing: <Clock className="h-3 w-3 animate-spin" />,
+  completed: <CheckCircle className="h-3 w-3" />,
+  failed: <XCircle className="h-3 w-3" />,
+};
+
+export function RosterManagementTab() {
+  const [isDragging, setIsDragging] = useState(false);
+
+  const { data: uploads, isLoading } = useQuery({
+    queryKey: ["roster-uploads"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("roster_uploads")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(10);
+      if (error) throw error;
+      return data as RosterUpload[];
+    },
+  });
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      handleFileUpload(files[0]);
+    }
+  }, []);
+
+  const handleFileUpload = (file: File) => {
+    // Validate file type
+    const validTypes = [
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "application/vnd.ms-excel",
+      "text/csv",
+    ];
+    if (!validTypes.includes(file.type)) {
+      toast.error("Please upload an Excel or CSV file");
+      return;
+    }
+    toast.info(`File "${file.name}" received. Processing would require backend implementation.`);
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      handleFileUpload(files[0]);
+    }
+  };
+
+  const downloadTemplate = () => {
+    // Create a simple CSV template
+    const headers = "Email,Full Name,Department,Role\n";
+    const example = "john.doe@city.gov,John Doe,IT,Staff\n";
+    const blob = new Blob([headers + example], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "roster_template.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("Template downloaded");
+  };
+
+  const lastUpload = uploads?.[0];
+  const stats = lastUpload
+    ? {
+        total: lastUpload.total_records,
+        new: lastUpload.new_users,
+        updated: lastUpload.updated_users,
+        deactivated: lastUpload.deactivated_users,
+      }
+    : { total: 0, new: 0, updated: 0, deactivated: 0 };
+
+  return (
+    <div className="space-y-6">
+      {/* Stats from last upload */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-2">
+              <Users className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">Total Records</span>
+            </div>
+            <div className="text-2xl font-bold mt-1">{stats.total}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-2">
+              <CheckCircle className="h-4 w-4 text-success" />
+              <span className="text-sm text-muted-foreground">New Users</span>
+            </div>
+            <div className="text-2xl font-bold mt-1 text-success">{stats.new}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-warning" />
+              <span className="text-sm text-muted-foreground">Updated</span>
+            </div>
+            <div className="text-2xl font-bold mt-1 text-warning">{stats.updated}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-2">
+              <XCircle className="h-4 w-4 text-destructive" />
+              <span className="text-sm text-muted-foreground">Deactivated</span>
+            </div>
+            <div className="text-2xl font-bold mt-1 text-destructive">{stats.deactivated}</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Upload Area */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Upload Roster</CardTitle>
+          <CardDescription>
+            Upload an Excel or CSV file to update the user roster. The system will compare with existing data.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div
+            className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+              isDragging ? "border-primary bg-primary/5" : "border-muted-foreground/25"
+            }`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
+            <FileSpreadsheet className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <p className="text-lg font-medium">Drag and drop your roster file here</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Supported formats: .xlsx, .xls, .csv
+            </p>
+            <div className="mt-4 flex items-center justify-center gap-4">
+              <label>
+                <input
+                  type="file"
+                  accept=".xlsx,.xls,.csv"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
+                <Button asChild>
+                  <span>
+                    <Upload className="h-4 w-4 mr-2" />
+                    Browse Files
+                  </span>
+                </Button>
+              </label>
+              <Button variant="outline" onClick={downloadTemplate}>
+                <Download className="h-4 w-4 mr-2" />
+                Download Template
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Upload History */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Upload History</CardTitle>
+          <CardDescription>Recent roster uploads and their processing status</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div className="text-center py-8 text-muted-foreground">Loading...</div>
+          ) : !uploads?.length ? (
+            <div className="text-center py-8 text-muted-foreground">No uploads yet</div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>File</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Records</TableHead>
+                  <TableHead>Changes</TableHead>
+                  <TableHead>Uploaded</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {uploads.map((upload) => (
+                  <TableRow key={upload.id}>
+                    <TableCell className="font-medium">{upload.file_name}</TableCell>
+                    <TableCell>
+                      <Badge variant={statusColors[upload.status]} className="flex items-center gap-1 w-fit">
+                        {statusIcons[upload.status]}
+                        {upload.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{upload.total_records}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2 text-xs">
+                        <span className="text-success">+{upload.new_users}</span>
+                        <span className="text-warning">~{upload.updated_users}</span>
+                        <span className="text-destructive">-{upload.deactivated_users}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>{format(new Date(upload.created_at), "MMM d, HH:mm")}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
