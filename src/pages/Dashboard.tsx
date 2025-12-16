@@ -41,6 +41,7 @@ const Dashboard = () => {
           changeType="increase"
           icon={Building2}
           iconColor="text-primary"
+          href="/organizations"
         />
         <StatCard
           title="Total Members"
@@ -49,6 +50,7 @@ const Dashboard = () => {
           changeType="increase"
           icon={Users}
           iconColor="text-accent"
+          href="/members"
         />
         <StatCard
           title="Active Events"
@@ -57,6 +59,7 @@ const Dashboard = () => {
           changeType="increase"
           icon={Calendar}
           iconColor="text-info"
+          href="/events"
         />
         <StatCard
           title="Donations Received"
@@ -65,6 +68,7 @@ const Dashboard = () => {
           changeType="increase"
           icon={DollarSign}
           iconColor="text-success"
+          href="/donations"
         />
         <StatCard
           title="Active Sponsorships"
@@ -73,6 +77,7 @@ const Dashboard = () => {
           changeType="increase"
           icon={Award}
           iconColor="text-warning"
+          href="/sponsorships"
         />
         <StatCard
           title="Volunteers Active"
@@ -81,6 +86,7 @@ const Dashboard = () => {
           changeType="increase"
           icon={Heart}
           iconColor="text-destructive"
+          href="/volunteering"
         />
       </div>
 

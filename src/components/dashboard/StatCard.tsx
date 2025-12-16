@@ -1,6 +1,7 @@
 import { LucideIcon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 
 interface StatCardProps {
   title: string;
@@ -9,11 +10,23 @@ interface StatCardProps {
   changeType?: "increase" | "decrease";
   icon: LucideIcon;
   iconColor?: string;
+  href?: string;
 }
 
-export function StatCard({ title, value, change, changeType, icon: Icon, iconColor = "text-primary" }: StatCardProps) {
+export function StatCard({ title, value, change, changeType, icon: Icon, iconColor = "text-primary", href }: StatCardProps) {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    if (href) {
+      navigate(href);
+    }
+  };
+
   return (
-    <Card>
+    <Card 
+      className={cn(href && "cursor-pointer hover:border-primary/50 transition-colors")}
+      onClick={handleClick}
+    >
       <CardContent className="p-6">
         <div className="flex items-start justify-between">
           <div className="flex-1">
