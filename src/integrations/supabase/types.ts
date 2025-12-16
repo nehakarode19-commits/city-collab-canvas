@@ -38,6 +38,48 @@ export type Database = {
         }
         Relationships: []
       }
+      channel_ownership: {
+        Row: {
+          channel_id: string
+          created_at: string
+          id: string
+          is_primary: boolean | null
+          ownership_date: string
+          user_id: string
+        }
+        Insert: {
+          channel_id: string
+          created_at?: string
+          id?: string
+          is_primary?: boolean | null
+          ownership_date?: string
+          user_id: string
+        }
+        Update: {
+          channel_id?: string
+          created_at?: string
+          id?: string
+          is_primary?: boolean | null
+          ownership_date?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "channel_ownership_channel_id_fkey"
+            columns: ["channel_id"]
+            isOneToOne: false
+            referencedRelation: "channels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "channel_ownership_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       channels: {
         Row: {
           created_at: string
@@ -46,6 +88,8 @@ export type Database = {
           description: string | null
           id: string
           name: string
+          permissions: Json | null
+          type: Database["public"]["Enums"]["channel_type"] | null
           updated_at: string
         }
         Insert: {
@@ -55,6 +99,8 @@ export type Database = {
           description?: string | null
           id?: string
           name: string
+          permissions?: Json | null
+          type?: Database["public"]["Enums"]["channel_type"] | null
           updated_at?: string
         }
         Update: {
@@ -64,6 +110,8 @@ export type Database = {
           description?: string | null
           id?: string
           name?: string
+          permissions?: Json | null
+          type?: Database["public"]["Enums"]["channel_type"] | null
           updated_at?: string
         }
         Relationships: [
@@ -79,6 +127,105 @@ export type Database = {
             columns: ["department_id"]
             isOneToOne: false
             referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      content: {
+        Row: {
+          channel_id: string | null
+          content: string
+          content_type: string | null
+          created_at: string
+          id: string
+          moderated_at: string | null
+          moderated_by: string | null
+          status: Database["public"]["Enums"]["content_status"] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          channel_id?: string | null
+          content: string
+          content_type?: string | null
+          created_at?: string
+          id?: string
+          moderated_at?: string | null
+          moderated_by?: string | null
+          status?: Database["public"]["Enums"]["content_status"] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          channel_id?: string | null
+          content?: string
+          content_type?: string | null
+          created_at?: string
+          id?: string
+          moderated_at?: string | null
+          moderated_by?: string | null
+          status?: Database["public"]["Enums"]["content_status"] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_channel_id_fkey"
+            columns: ["channel_id"]
+            isOneToOne: false
+            referencedRelation: "channels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_moderated_by_fkey"
+            columns: ["moderated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      content_removal_logs: {
+        Row: {
+          content_id: string
+          created_at: string
+          id: string
+          original_content: string | null
+          reason: string | null
+          removal_date: string
+          removed_by: string | null
+        }
+        Insert: {
+          content_id: string
+          created_at?: string
+          id?: string
+          original_content?: string | null
+          reason?: string | null
+          removal_date?: string
+          removed_by?: string | null
+        }
+        Update: {
+          content_id?: string
+          created_at?: string
+          id?: string
+          original_content?: string | null
+          reason?: string | null
+          removal_date?: string
+          removed_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_removal_logs_removed_by_fkey"
+            columns: ["removed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -106,6 +253,85 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      file_upload_restrictions: {
+        Row: {
+          allowed_file_types: string[] | null
+          channel_id: string
+          created_at: string
+          id: string
+          max_file_size_mb: number | null
+          updated_at: string
+        }
+        Insert: {
+          allowed_file_types?: string[] | null
+          channel_id: string
+          created_at?: string
+          id?: string
+          max_file_size_mb?: number | null
+          updated_at?: string
+        }
+        Update: {
+          allowed_file_types?: string[] | null
+          channel_id?: string
+          created_at?: string
+          id?: string
+          max_file_size_mb?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "file_upload_restrictions_channel_id_fkey"
+            columns: ["channel_id"]
+            isOneToOne: true
+            referencedRelation: "channels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      legal_disclaimers: {
+        Row: {
+          content: string
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean | null
+          requires_acceptance: boolean | null
+          title: string
+          updated_at: string
+          version: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          requires_acceptance?: boolean | null
+          title: string
+          updated_at?: string
+          version: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          requires_acceptance?: boolean | null
+          title?: string
+          updated_at?: string
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "legal_disclaimers_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       messages: {
         Row: {
@@ -249,6 +475,114 @@ export type Database = {
           },
         ]
       }
+      user_bans: {
+        Row: {
+          ban_date: string
+          banned_by: string | null
+          channel_id: string | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_global: boolean | null
+          reason: string | null
+          user_id: string
+        }
+        Insert: {
+          ban_date?: string
+          banned_by?: string | null
+          channel_id?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_global?: boolean | null
+          reason?: string | null
+          user_id: string
+        }
+        Update: {
+          ban_date?: string
+          banned_by?: string | null
+          channel_id?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_global?: boolean | null
+          reason?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_bans_banned_by_fkey"
+            columns: ["banned_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_bans_channel_id_fkey"
+            columns: ["channel_id"]
+            isOneToOne: false
+            referencedRelation: "channels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_bans_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_preferences: {
+        Row: {
+          created_at: string
+          disclaimer_accepted: boolean | null
+          disclaimer_accepted_at: string | null
+          email_notifications: boolean | null
+          id: string
+          profile_visibility:
+            | Database["public"]["Enums"]["profile_visibility"]
+            | null
+          sponsor_posting_enabled: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          disclaimer_accepted?: boolean | null
+          disclaimer_accepted_at?: string | null
+          email_notifications?: boolean | null
+          id?: string
+          profile_visibility?:
+            | Database["public"]["Enums"]["profile_visibility"]
+            | null
+          sponsor_posting_enabled?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          disclaimer_accepted?: boolean | null
+          disclaimer_accepted_at?: string | null
+          email_notifications?: boolean | null
+          id?: string
+          profile_visibility?:
+            | Database["public"]["Enums"]["profile_visibility"]
+            | null
+          sponsor_posting_enabled?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -278,6 +612,61 @@ export type Database = {
           },
         ]
       }
+      violation_logs: {
+        Row: {
+          action_by: string | null
+          action_taken: Database["public"]["Enums"]["moderation_action"]
+          content_id: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          user_id: string
+          violation_type: Database["public"]["Enums"]["violation_type"]
+        }
+        Insert: {
+          action_by?: string | null
+          action_taken: Database["public"]["Enums"]["moderation_action"]
+          content_id?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          user_id: string
+          violation_type: Database["public"]["Enums"]["violation_type"]
+        }
+        Update: {
+          action_by?: string | null
+          action_taken?: Database["public"]["Enums"]["moderation_action"]
+          content_id?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          user_id?: string
+          violation_type?: Database["public"]["Enums"]["violation_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "violation_logs_action_by_fkey"
+            columns: ["action_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "violation_logs_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "content"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "violation_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -290,9 +679,33 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_channel_owner: {
+        Args: { _channel_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_user_banned: {
+        Args: { _channel_id?: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "department_manager" | "staff"
+      channel_type: "organization" | "topic" | "private" | "public"
+      content_status: "pending" | "approved" | "rejected" | "flagged"
+      moderation_action:
+        | "warning"
+        | "content_removal"
+        | "temp_ban"
+        | "perm_ban"
+        | "mute"
+      profile_visibility: "public" | "members_only" | "private"
+      violation_type:
+        | "spam"
+        | "harassment"
+        | "hate_speech"
+        | "misinformation"
+        | "inappropriate_content"
+        | "other"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -421,6 +834,24 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "department_manager", "staff"],
+      channel_type: ["organization", "topic", "private", "public"],
+      content_status: ["pending", "approved", "rejected", "flagged"],
+      moderation_action: [
+        "warning",
+        "content_removal",
+        "temp_ban",
+        "perm_ban",
+        "mute",
+      ],
+      profile_visibility: ["public", "members_only", "private"],
+      violation_type: [
+        "spam",
+        "harassment",
+        "hate_speech",
+        "misinformation",
+        "inappropriate_content",
+        "other",
+      ],
     },
   },
 } as const
