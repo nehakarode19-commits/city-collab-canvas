@@ -1,4 +1,4 @@
-import { Home, Building2, Users, Calendar, DollarSign, Award, Heart, Network, BarChart3, Settings, FileText, Building, Trophy, Shield, Hash, ScrollText, UserCog } from "lucide-react";
+import { Home, Building2, Users, Calendar, DollarSign, Award, Heart, Network, BarChart3, Settings, FileText, Building, Trophy, Shield, Hash, ScrollText, UserCog, Briefcase, Handshake, Bot, Upload } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
   Sidebar,
@@ -27,9 +27,15 @@ const mainNavItems = [
 ];
 
 const adminNavItems = [
+  { title: "Membership & Identity", url: "/membership", icon: Upload },
   { title: "Channel Management", url: "/channels", icon: Hash },
   { title: "Moderation", url: "/moderation", icon: Shield },
   { title: "Legal Disclaimers", url: "/legal-disclaimers", icon: ScrollText },
+  { title: "Retiree Marketplace", url: "/retiree-marketplace", icon: Briefcase },
+  { title: "Onboarding", url: "/onboarding", icon: Building2 },
+  { title: "Sponsor Analytics", url: "/sponsor-analytics", icon: BarChart3 },
+  { title: "City Collaborations", url: "/collaborations", icon: Handshake },
+  { title: "GovBot Librarian", url: "/govbot", icon: Bot },
 ];
 
 const secondaryNavItems = [

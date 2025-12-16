@@ -131,6 +131,70 @@ export type Database = {
           },
         ]
       }
+      city_collaborations: {
+        Row: {
+          accepted_at: string | null
+          collaboration_name: string
+          created_at: string
+          created_by: string | null
+          id: string
+          initiator_org_id: string | null
+          invitation_sent_at: string | null
+          partner_org_id: string | null
+          scope: string[] | null
+          status: Database["public"]["Enums"]["collaboration_status"] | null
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          collaboration_name: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          initiator_org_id?: string | null
+          invitation_sent_at?: string | null
+          partner_org_id?: string | null
+          scope?: string[] | null
+          status?: Database["public"]["Enums"]["collaboration_status"] | null
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          collaboration_name?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          initiator_org_id?: string | null
+          invitation_sent_at?: string | null
+          partner_org_id?: string | null
+          scope?: string[] | null
+          status?: Database["public"]["Enums"]["collaboration_status"] | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "city_collaborations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "city_collaborations_initiator_org_id_fkey"
+            columns: ["initiator_org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations_registry"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "city_collaborations_partner_org_id_fkey"
+            columns: ["partner_org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations_registry"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       content: {
         Row: {
           channel_id: string | null
@@ -289,6 +353,104 @@ export type Database = {
           },
         ]
       }
+      govbot_content: {
+        Row: {
+          created_at: string
+          full_content: string | null
+          id: string
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          source_url_id: string | null
+          status: string | null
+          summary: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          full_content?: string | null
+          id?: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source_url_id?: string | null
+          status?: string | null
+          summary?: string | null
+          title: string
+        }
+        Update: {
+          created_at?: string
+          full_content?: string | null
+          id?: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source_url_id?: string | null
+          status?: string | null
+          summary?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "govbot_content_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "govbot_content_source_url_id_fkey"
+            columns: ["source_url_id"]
+            isOneToOne: false
+            referencedRelation: "govbot_trusted_urls"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      govbot_trusted_urls: {
+        Row: {
+          added_by: string | null
+          category: string | null
+          crawl_frequency_hours: number | null
+          created_at: string
+          domain: string
+          id: string
+          is_active: boolean | null
+          last_crawled_at: string | null
+          url: string
+        }
+        Insert: {
+          added_by?: string | null
+          category?: string | null
+          crawl_frequency_hours?: number | null
+          created_at?: string
+          domain: string
+          id?: string
+          is_active?: boolean | null
+          last_crawled_at?: string | null
+          url: string
+        }
+        Update: {
+          added_by?: string | null
+          category?: string | null
+          crawl_frequency_hours?: number | null
+          created_at?: string
+          domain?: string
+          id?: string
+          is_active?: boolean | null
+          last_crawled_at?: string | null
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "govbot_trusted_urls_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       legal_disclaimers: {
         Row: {
           content: string
@@ -381,6 +543,45 @@ export type Database = {
           },
         ]
       }
+      organizations_registry: {
+        Row: {
+          admin_email: string | null
+          created_at: string
+          domain: string | null
+          domain_verified: boolean | null
+          external_collab_enabled: boolean | null
+          id: string
+          name: string
+          plan_type: string | null
+          updated_at: string
+          verified_at: string | null
+        }
+        Insert: {
+          admin_email?: string | null
+          created_at?: string
+          domain?: string | null
+          domain_verified?: boolean | null
+          external_collab_enabled?: boolean | null
+          id?: string
+          name: string
+          plan_type?: string | null
+          updated_at?: string
+          verified_at?: string | null
+        }
+        Update: {
+          admin_email?: string | null
+          created_at?: string
+          domain?: string | null
+          domain_verified?: boolean | null
+          external_collab_enabled?: boolean | null
+          id?: string
+          name?: string
+          plan_type?: string | null
+          updated_at?: string
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -402,6 +603,180 @@ export type Database = {
           full_name?: string
           id?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      retirees: {
+        Row: {
+          available_for_work: boolean | null
+          bio: string | null
+          created_at: string
+          expertise: string[] | null
+          guild_member: boolean | null
+          hourly_rate: number | null
+          id: string
+          identity_verified: boolean | null
+          personal_email: string | null
+          status: Database["public"]["Enums"]["retiree_status"] | null
+          updated_at: string
+          user_id: string | null
+          verification_document: string | null
+        }
+        Insert: {
+          available_for_work?: boolean | null
+          bio?: string | null
+          created_at?: string
+          expertise?: string[] | null
+          guild_member?: boolean | null
+          hourly_rate?: number | null
+          id?: string
+          identity_verified?: boolean | null
+          personal_email?: string | null
+          status?: Database["public"]["Enums"]["retiree_status"] | null
+          updated_at?: string
+          user_id?: string | null
+          verification_document?: string | null
+        }
+        Update: {
+          available_for_work?: boolean | null
+          bio?: string | null
+          created_at?: string
+          expertise?: string[] | null
+          guild_member?: boolean | null
+          hourly_rate?: number | null
+          id?: string
+          identity_verified?: boolean | null
+          personal_email?: string | null
+          status?: Database["public"]["Enums"]["retiree_status"] | null
+          updated_at?: string
+          user_id?: string | null
+          verification_document?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "retirees_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      roster_uploads: {
+        Row: {
+          created_at: string
+          deactivated_users: number | null
+          diff_preview: Json | null
+          errors: Json | null
+          file_name: string
+          file_path: string | null
+          id: string
+          new_users: number | null
+          processed_at: string | null
+          status: string | null
+          total_records: number | null
+          updated_users: number | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          deactivated_users?: number | null
+          diff_preview?: Json | null
+          errors?: Json | null
+          file_name: string
+          file_path?: string | null
+          id?: string
+          new_users?: number | null
+          processed_at?: string | null
+          status?: string | null
+          total_records?: number | null
+          updated_users?: number | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          deactivated_users?: number | null
+          diff_preview?: Json | null
+          errors?: Json | null
+          file_name?: string
+          file_path?: string | null
+          id?: string
+          new_users?: number | null
+          processed_at?: string | null
+          status?: string | null
+          total_records?: number | null
+          updated_users?: number | null
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "roster_uploads_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shared_workspaces: {
+        Row: {
+          collaboration_id: string
+          created_at: string
+          data_sharing_scope: Json | null
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          collaboration_id: string
+          created_at?: string
+          data_sharing_scope?: Json | null
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          collaboration_id?: string
+          created_at?: string
+          data_sharing_scope?: Json | null
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shared_workspaces_collaboration_id_fkey"
+            columns: ["collaboration_id"]
+            isOneToOne: false
+            referencedRelation: "city_collaborations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      skills: {
+        Row: {
+          category: string | null
+          created_at: string
+          id: string
+          is_system: boolean | null
+          name: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          is_system?: boolean | null
+          name: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          is_system?: boolean | null
+          name?: string
         }
         Relationships: []
       }
@@ -474,6 +849,81 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      sponsor_analytics: {
+        Row: {
+          content_downloads: number | null
+          created_at: string
+          engagement_clicks: number | null
+          id: string
+          impressions: number | null
+          period_end: string
+          period_start: string
+          sponsor_id: string
+          unique_viewers: number | null
+        }
+        Insert: {
+          content_downloads?: number | null
+          created_at?: string
+          engagement_clicks?: number | null
+          id?: string
+          impressions?: number | null
+          period_end: string
+          period_start: string
+          sponsor_id: string
+          unique_viewers?: number | null
+        }
+        Update: {
+          content_downloads?: number | null
+          created_at?: string
+          engagement_clicks?: number | null
+          id?: string
+          impressions?: number | null
+          period_end?: string
+          period_start?: string
+          sponsor_id?: string
+          unique_viewers?: number | null
+        }
+        Relationships: []
+      }
+      sponsor_visibility_contracts: {
+        Row: {
+          actual_impressions: number | null
+          contract_end: string
+          contract_start: string
+          created_at: string
+          guaranteed_impressions: number | null
+          id: string
+          sponsor_id: string
+          status: string | null
+          terms: Json | null
+          updated_at: string
+        }
+        Insert: {
+          actual_impressions?: number | null
+          contract_end: string
+          contract_start: string
+          created_at?: string
+          guaranteed_impressions?: number | null
+          id?: string
+          sponsor_id: string
+          status?: string | null
+          terms?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          actual_impressions?: number | null
+          contract_end?: string
+          contract_start?: string
+          created_at?: string
+          guaranteed_impressions?: number | null
+          id?: string
+          sponsor_id?: string
+          status?: string | null
+          terms?: Json | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       user_bans: {
         Row: {
@@ -612,6 +1062,48 @@ export type Database = {
           },
         ]
       }
+      user_skills: {
+        Row: {
+          created_at: string
+          id: string
+          is_self_reported: boolean | null
+          skill_id: string
+          user_id: string
+          verified: boolean | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_self_reported?: boolean | null
+          skill_id: string
+          user_id: string
+          verified?: boolean | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_self_reported?: boolean | null
+          skill_id?: string
+          user_id?: string
+          verified?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_skills_skill_id_fkey"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "skills"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_skills_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       violation_logs: {
         Row: {
           action_by: string | null
@@ -667,6 +1159,55 @@ export type Database = {
           },
         ]
       }
+      workspace_access: {
+        Row: {
+          access_level: string | null
+          created_at: string
+          granted_by: string | null
+          id: string
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          access_level?: string | null
+          created_at?: string
+          granted_by?: string | null
+          id?: string
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          access_level?: string | null
+          created_at?: string
+          granted_by?: string | null
+          id?: string
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_access_granted_by_fkey"
+            columns: ["granted_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workspace_access_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workspace_access_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "shared_workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -691,6 +1232,7 @@ export type Database = {
     Enums: {
       app_role: "admin" | "department_manager" | "staff"
       channel_type: "organization" | "topic" | "private" | "public"
+      collaboration_status: "pending" | "active" | "suspended" | "ended"
       content_status: "pending" | "approved" | "rejected" | "flagged"
       moderation_action:
         | "warning"
@@ -699,6 +1241,7 @@ export type Database = {
         | "perm_ban"
         | "mute"
       profile_visibility: "public" | "members_only" | "private"
+      retiree_status: "pending" | "active" | "inactive" | "suspended"
       violation_type:
         | "spam"
         | "harassment"
@@ -835,6 +1378,7 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "department_manager", "staff"],
       channel_type: ["organization", "topic", "private", "public"],
+      collaboration_status: ["pending", "active", "suspended", "ended"],
       content_status: ["pending", "approved", "rejected", "flagged"],
       moderation_action: [
         "warning",
@@ -844,6 +1388,7 @@ export const Constants = {
         "mute",
       ],
       profile_visibility: ["public", "members_only", "private"],
+      retiree_status: ["pending", "active", "inactive", "suspended"],
       violation_type: [
         "spam",
         "harassment",
