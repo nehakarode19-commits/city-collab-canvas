@@ -56,6 +56,24 @@ const mockDonations = [
     collected: 18000,
     description: "Provide essential medical supplies to rural healthcare centers.",
   },
+  {
+    id: 5,
+    title: "Clean Water Project",
+    category: "Environment",
+    subcategory: "Infrastructure",
+    required: 80000,
+    collected: 45000,
+    description: "Build water purification systems for communities without clean water access.",
+  },
+  {
+    id: 6,
+    title: "Senior Care Initiative",
+    category: "Social Welfare",
+    subcategory: "Care Services",
+    required: 40000,
+    collected: 28000,
+    description: "Support elderly community members with essential care and companionship.",
+  },
 ];
 
 const mockDonors = [
@@ -90,6 +108,22 @@ const mockDonors = [
     invoiceRef: "INV-2024-004",
     date: "2024-01-22",
     type: "Collaboration",
+  },
+  {
+    id: 5,
+    name: "Global Ventures LLC",
+    amount: 50000,
+    invoiceRef: "INV-2024-005",
+    date: "2024-02-10",
+    type: "Corporate",
+  },
+  {
+    id: 6,
+    name: "Sarah Williams",
+    amount: 7500,
+    invoiceRef: "INV-2024-006",
+    date: "2024-02-15",
+    type: "Individual",
   },
 ];
 

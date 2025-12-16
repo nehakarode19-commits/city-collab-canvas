@@ -61,6 +61,24 @@ const mockOrganizations: Organization[] = [
     status: "inactive",
     contact: "contact@youthfund.org",
   },
+  {
+    id: "5",
+    name: "Community Health Alliance",
+    type: "Healthcare",
+    members: 78,
+    events: 15,
+    status: "active",
+    contact: "info@healthalliance.org",
+  },
+  {
+    id: "6",
+    name: "Regional Arts Council",
+    type: "Arts & Culture",
+    members: 42,
+    events: 20,
+    status: "active",
+    contact: "hello@artscouncil.org",
+  },
 ];
 
 const Organizations = () => {

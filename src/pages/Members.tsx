@@ -62,6 +62,24 @@ const mockMembers: Member[] = [
     status: "inactive",
     joinDate: "2023-11-05",
   },
+  {
+    id: "5",
+    name: "Robert Garcia",
+    email: "robert.g@email.com",
+    organization: "Community Health Alliance",
+    role: "Admin",
+    status: "active",
+    joinDate: "2024-04-12",
+  },
+  {
+    id: "6",
+    name: "Lisa Thompson",
+    email: "lisa.t@email.com",
+    organization: "Environmental Action Group",
+    role: "Volunteer",
+    status: "active",
+    joinDate: "2024-05-08",
+  },
 ];
 
 const Members = () => {

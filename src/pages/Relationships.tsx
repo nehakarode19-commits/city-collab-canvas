@@ -132,6 +132,33 @@ const mockCollaborations = [
     startDate: "2024-02-01",
     events: 0,
   },
+  {
+    id: 4,
+    chapter1: "Miami South Beach Chapter",
+    chapter2: "Houston Central Chapter",
+    type: "Training Program",
+    status: "ongoing" as const,
+    startDate: "2024-03-15",
+    events: 2,
+  },
+  {
+    id: 5,
+    chapter1: "San Francisco Tech Chapter",
+    chapter2: "Austin Downtown Chapter",
+    type: "Joint Event",
+    status: "completed" as const,
+    startDate: "2023-09-20",
+    events: 4,
+  },
+  {
+    id: 6,
+    chapter1: "Brooklyn Chapter",
+    chapter2: "Los Angeles Downtown Chapter",
+    type: "Resource Sharing",
+    status: "ongoing" as const,
+    startDate: "2024-04-01",
+    events: 1,
+  },
 ];
 
 const Relationships = () => {

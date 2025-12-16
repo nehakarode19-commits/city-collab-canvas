@@ -64,6 +64,14 @@ const categories = [
     capacity: 10,
     description: "Post-event cleanup and venue restoration",
   },
+  {
+    id: 6,
+    name: "First Aid Station",
+    timeSlot: "8:00 AM - 6:00 PM",
+    current: 2,
+    capacity: 3,
+    description: "Provide basic first aid and medical assistance",
+  },
 ];
 
 const mockVolunteers = {
@@ -79,8 +87,27 @@ const mockVolunteers = {
     { id: 7, name: "Anna Martinez", slot: "10:00 AM - 2:00 PM", contact: "anna@email.com" },
     { id: 8, name: "Chris Taylor", slot: "10:00 AM - 2:00 PM", contact: "chris@email.com" },
     { id: 9, name: "Rachel Green", slot: "10:00 AM - 2:00 PM", contact: "rachel@email.com" },
-    { id: 10, name: "Tom Anderson", slot: "10:00 AM - 2:00 PM", contact: "tom@email.com" },
-    { id: 11, name: "Jessica White", slot: "10:00 AM - 2:00 PM", contact: "jessica@email.com" },
+  ],
+  3: [
+    { id: 10, name: "Tom Anderson", slot: "9:00 AM - 5:00 PM", contact: "tom@email.com" },
+    { id: 11, name: "Jessica White", slot: "9:00 AM - 5:00 PM", contact: "jessica@email.com" },
+  ],
+  4: [
+    { id: 12, name: "Kevin Brown", slot: "11:00 AM - 3:00 PM", contact: "kevin@email.com" },
+    { id: 13, name: "Amanda Lee", slot: "11:00 AM - 3:00 PM", contact: "amanda@email.com" },
+    { id: 14, name: "Brian Moore", slot: "11:00 AM - 3:00 PM", contact: "brian@email.com" },
+    { id: 15, name: "Nicole Harris", slot: "11:00 AM - 3:00 PM", contact: "nicole@email.com" },
+    { id: 16, name: "Steven Clark", slot: "11:00 AM - 3:00 PM", contact: "steven@email.com" },
+  ],
+  5: [
+    { id: 17, name: "Michelle Turner", slot: "4:00 PM - 6:00 PM", contact: "michelle@email.com" },
+    { id: 18, name: "Jason King", slot: "4:00 PM - 6:00 PM", contact: "jason@email.com" },
+    { id: 19, name: "Lauren Scott", slot: "4:00 PM - 6:00 PM", contact: "lauren@email.com" },
+    { id: 20, name: "Mark Adams", slot: "4:00 PM - 6:00 PM", contact: "mark@email.com" },
+  ],
+  6: [
+    { id: 21, name: "Dr. Patricia Wright", slot: "8:00 AM - 6:00 PM", contact: "patricia@email.com" },
+    { id: 22, name: "James Cooper", slot: "8:00 AM - 6:00 PM", contact: "james@email.com" },
   ],
 };
 

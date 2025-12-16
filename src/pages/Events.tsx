@@ -53,6 +53,24 @@ const mockEvents: Event[] = [
     attendees: 120,
     status: "completed",
   },
+  {
+    id: "5",
+    title: "Health Awareness Marathon",
+    date: "2024-12-20",
+    location: "Downtown Stadium",
+    organization: "Community Health Alliance",
+    attendees: 250,
+    status: "upcoming",
+  },
+  {
+    id: "6",
+    title: "Annual Charity Gala",
+    date: "2024-12-31",
+    location: "Grand Ballroom Hotel",
+    organization: "Regional Philanthropy Council",
+    attendees: 180,
+    status: "upcoming",
+  },
 ];
 
 const Events = () => {
