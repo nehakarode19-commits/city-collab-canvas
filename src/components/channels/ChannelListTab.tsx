@@ -218,14 +218,14 @@ export function ChannelListTab() {
               <div className="space-y-2">
                 <Label>Department (optional)</Label>
                 <Select
-                  value={formData.department_id}
-                  onValueChange={(value) => setFormData({ ...formData, department_id: value })}
+                  value={formData.department_id || "none"}
+                  onValueChange={(value) => setFormData({ ...formData, department_id: value === "none" ? "" : value })}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select department" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">None</SelectItem>
+                    <SelectItem value="none">None</SelectItem>
                     {departments?.map((dept) => (
                       <SelectItem key={dept.id} value={dept.id}>
                         {dept.name}
