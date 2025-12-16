@@ -59,6 +59,8 @@ const mockSponsors = [
   { id: 2, name: "Innovation Inc", tier: "Gold", status: "active" as const, logo: "II" },
   { id: 3, name: "Global Solutions", tier: "Silver", status: "active" as const, logo: "GS" },
   { id: 4, name: "Digital Ventures", tier: "Gold", status: "inactive" as const, logo: "DV" },
+  { id: 5, name: "Future Systems", tier: "Platinum", status: "active" as const, logo: "FS" },
+  { id: 6, name: "Metro Partners", tier: "Silver", status: "active" as const, logo: "MP" },
 ];
 
 const mockPackages = [
@@ -88,6 +90,33 @@ const mockPackages = [
     deliveredOn: null,
     quantity: 8,
     benefits: "All Silver Benefits",
+  },
+  {
+    id: 4,
+    name: "Conference Gold Package",
+    price: 30000,
+    dueDate: "2024-09-15",
+    deliveredOn: "2024-02-28",
+    quantity: 4,
+    benefits: "All Gold Benefits",
+  },
+  {
+    id: 5,
+    name: "Quarterly Silver Bundle",
+    price: 15000,
+    dueDate: "2024-12-15",
+    deliveredOn: null,
+    quantity: 6,
+    benefits: "All Silver Benefits",
+  },
+  {
+    id: 6,
+    name: "Premium Platinum Suite",
+    price: 75000,
+    dueDate: "2025-01-31",
+    deliveredOn: null,
+    quantity: 2,
+    benefits: "All Platinum Benefits + Custom",
   },
 ];
 
