@@ -23,6 +23,10 @@ import Collaboration from "./pages/Collaboration";
 import ChannelView from "./pages/ChannelView";
 import RolesPermissions from "./pages/RolesPermissions";
 import Departments from "./pages/Departments";
+import Moderation from "./pages/Moderation";
+import ChannelManagement from "./pages/ChannelManagement";
+import LegalDisclaimers from "./pages/LegalDisclaimers";
+import UserPreferences from "./pages/UserPreferences";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -53,6 +57,10 @@ const App = () => (
           <Route path="/collaboration/:id" element={<AdminLayout><ChannelView /></AdminLayout>} />
           <Route path="/roles-permissions" element={<AdminLayout><RolesPermissions /></AdminLayout>} />
           <Route path="/departments" element={<AdminLayout><Departments /></AdminLayout>} />
+          <Route path="/moderation" element={<AdminLayout><Moderation /></AdminLayout>} />
+          <Route path="/channels" element={<AdminLayout><ChannelManagement /></AdminLayout>} />
+          <Route path="/legal-disclaimers" element={<AdminLayout><LegalDisclaimers /></AdminLayout>} />
+          <Route path="/user-preferences" element={<AdminLayout><UserPreferences /></AdminLayout>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
