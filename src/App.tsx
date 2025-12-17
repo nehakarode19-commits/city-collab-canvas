@@ -36,6 +36,8 @@ import GovBotLibrarian from "./pages/GovBotLibrarian";
 import FeedGovernance from "./pages/FeedGovernance";
 import ContentTaxonomy from "./pages/ContentTaxonomy";
 import AccessControl from "./pages/AccessControl";
+import VerificationCompliance from "./pages/VerificationCompliance";
+import StrategicPartners from "./pages/StrategicPartners";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -79,6 +81,8 @@ const App = () => (
           <Route path="/feed-governance" element={<AdminLayout><FeedGovernance /></AdminLayout>} />
           <Route path="/content-taxonomy" element={<AdminLayout><ContentTaxonomy /></AdminLayout>} />
           <Route path="/access-control" element={<AdminLayout><AccessControl /></AdminLayout>} />
+          <Route path="/verification" element={<AdminLayout><VerificationCompliance /></AdminLayout>} />
+          <Route path="/strategic-partners" element={<AdminLayout><StrategicPartners /></AdminLayout>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
