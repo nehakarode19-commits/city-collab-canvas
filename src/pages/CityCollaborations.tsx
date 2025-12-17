@@ -5,10 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Textarea } from "@/components/ui/textarea";
-import { Handshake, Search, Send, Building2, Users, Clock, CheckCircle, XCircle, MessageSquare, Heart, Share2, Filter, Bell, Megaphone, Calendar, FileText, MoreHorizontal } from "lucide-react";
+import { Handshake, Search, Send, Building2, Users, Clock, CheckCircle, XCircle, Bell } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -47,15 +45,6 @@ const mockDepartments = [
   { id: "dept-6", name: "Emergency Services", description: "Fire, EMS, and disaster response", memberCount: 156 },
 ];
 
-// Mock feed posts
-const mockFeedPosts = [
-  { id: "1", type: "announcement", author: "City of Springfield", authorOrg: "Springfield", content: "New emergency response protocol has been approved for regional implementation.", likes: 24, comments: 8, timestamp: "2024-01-15T10:30:00Z" },
-  { id: "2", type: "event", author: "Metro Transit Authority", authorOrg: "Metro", content: "Joint training session scheduled for January 25th. All emergency personnel are invited.", likes: 45, comments: 12, timestamp: "2024-01-14T14:20:00Z" },
-  { id: "3", type: "update", author: "Regional Water District", authorOrg: "RWD", content: "Water conservation guidelines updated. Please review the attached document.", likes: 18, comments: 5, timestamp: "2024-01-13T09:15:00Z" },
-  { id: "4", type: "announcement", author: "County Health Dept", authorOrg: "CHD", content: "Flu vaccination clinics available at all partner locations starting next week.", likes: 67, comments: 23, timestamp: "2024-01-12T16:45:00Z" },
-  { id: "5", type: "event", author: "City of Riverdale", authorOrg: "Riverdale", content: "Annual inter-city collaboration summit - Save the date: March 15th!", likes: 89, comments: 34, timestamp: "2024-01-11T11:00:00Z" },
-];
-
 const statusColors: Record<CollaborationStatus, string> = {
   pending: "bg-warning/10 text-warning border-warning/20",
   active: "bg-success/10 text-success border-success/20",
@@ -63,18 +52,10 @@ const statusColors: Record<CollaborationStatus, string> = {
   ended: "bg-muted text-muted-foreground border-muted",
 };
 
-const postTypeColors: Record<string, string> = {
-  announcement: "bg-primary/10 text-primary",
-  event: "bg-info/10 text-info",
-  update: "bg-success/10 text-success",
-};
-
 export default function CityCollaborations() {
   const [activeTab, setActiveTab] = useState("organizations");
   const [searchQuery, setSearchQuery] = useState("");
-  const [feedFilter, setFeedFilter] = useState("all");
   const [confirmDialog, setConfirmDialog] = useState<{ open: boolean; org: Organization | null; type: "org" | "dept" }>({ open: false, org: null, type: "org" });
-  const [likedPosts, setLikedPosts] = useState<string[]>([]);
 
   const queryClient = useQueryClient();
 
@@ -168,16 +149,6 @@ export default function CityCollaborations() {
   const pendingRequests = collaborations?.filter(c => c.status === "pending") || [];
   const activeCollaborations = collaborations?.filter(c => c.status === "active") || [];
 
-  const filteredFeed = feedFilter === "all" 
-    ? mockFeedPosts 
-    : mockFeedPosts.filter(post => post.type === feedFilter);
-
-  const handleLike = (postId: string) => {
-    setLikedPosts(prev => 
-      prev.includes(postId) ? prev.filter(id => id !== postId) : [...prev, postId]
-    );
-  };
-
   const getInitials = (name: string) => {
     return name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
   };
@@ -206,7 +177,7 @@ export default function CityCollaborations() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="organizations" className="flex items-center gap-2">
             <Building2 className="h-4 w-4" />
             Organizations
@@ -223,10 +194,6 @@ export default function CityCollaborations() {
                 {pendingRequests.length}
               </Badge>
             )}
-          </TabsTrigger>
-          <TabsTrigger value="feed" className="flex items-center gap-2">
-            <MessageSquare className="h-4 w-4" />
-            Collaboration Feed
           </TabsTrigger>
         </TabsList>
 
@@ -588,123 +555,6 @@ export default function CityCollaborations() {
               )}
             </CardContent>
           </Card>
-        </TabsContent>
-
-        {/* Collaboration Feed Tab */}
-        <TabsContent value="feed" className="space-y-4">
-          <div className="flex items-center justify-between gap-4">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search posts..." className="pl-10" />
-            </div>
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-muted-foreground" />
-              <Select value={feedFilter} onValueChange={setFeedFilter}>
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder="Filter by type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Posts</SelectItem>
-                  <SelectItem value="announcement">Announcements</SelectItem>
-                  <SelectItem value="event">Events</SelectItem>
-                  <SelectItem value="update">Updates</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          {/* New Post Card */}
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-start gap-3">
-                <Avatar>
-                  <AvatarFallback className="bg-primary text-primary-foreground">AD</AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <Textarea 
-                    placeholder="Share an update with your collaboration partners..."
-                    className="min-h-[80px] resize-none"
-                  />
-                  <div className="flex items-center justify-between mt-3">
-                    <div className="flex items-center gap-2">
-                      <Select defaultValue="announcement">
-                        <SelectTrigger className="w-36 h-8">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="announcement">Announcement</SelectItem>
-                          <SelectItem value="event">Event</SelectItem>
-                          <SelectItem value="update">Update</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <Button size="sm">
-                      <Send className="h-4 w-4 mr-2" />
-                      Post
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Feed Posts */}
-          <div className="space-y-4">
-            {filteredFeed.map((post) => (
-              <Card key={post.id}>
-                <CardContent className="pt-4">
-                  <div className="flex items-start gap-3">
-                    <Avatar>
-                      <AvatarFallback className="bg-secondary text-secondary-foreground">
-                        {post.authorOrg.slice(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold">{post.author}</span>
-                          <Badge className={`${postTypeColors[post.type]} text-xs`}>
-                            {post.type === "announcement" && <Megaphone className="h-3 w-3 mr-1" />}
-                            {post.type === "event" && <Calendar className="h-3 w-3 mr-1" />}
-                            {post.type === "update" && <FileText className="h-3 w-3 mr-1" />}
-                            {post.type}
-                          </Badge>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs text-muted-foreground">
-                            {format(new Date(post.timestamp), "MMM d, h:mm a")}
-                          </span>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                      <p className="text-sm mb-4">{post.content}</p>
-                      <div className="flex items-center gap-4 pt-2 border-t">
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className={`gap-1 ${likedPosts.includes(post.id) ? "text-destructive" : ""}`}
-                          onClick={() => handleLike(post.id)}
-                        >
-                          <Heart className={`h-4 w-4 ${likedPosts.includes(post.id) ? "fill-current" : ""}`} />
-                          {post.likes + (likedPosts.includes(post.id) ? 1 : 0)}
-                        </Button>
-                        <Button variant="ghost" size="sm" className="gap-1">
-                          <MessageSquare className="h-4 w-4" />
-                          {post.comments}
-                        </Button>
-                        <Button variant="ghost" size="sm" className="gap-1">
-                          <Share2 className="h-4 w-4" />
-                          Share
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
         </TabsContent>
       </Tabs>
 
