@@ -1,4 +1,4 @@
-import { Home, Building2, Users, Calendar, DollarSign, Award, Heart, Network, BarChart3, Settings, FileText, Building, Trophy, Shield, Hash, ScrollText, UserCog, Briefcase, Handshake, Bot, Upload, Megaphone, Tag, Lock, FileCheck, UserCheck } from "lucide-react";
+import { Home, Building2, Users, Calendar, DollarSign, Award, Heart, Network, BarChart3, Settings, FileText, Building, Trophy, Shield, Hash, ScrollText, UserCog, Briefcase, Handshake, Bot, Megaphone, Tag, Lock, FileCheck, UserCheck } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
   Sidebar,
@@ -27,7 +27,6 @@ const mainNavItems = [
 ];
 
 const adminNavItems = [
-  { title: "Membership & Identity", url: "/membership", icon: Upload },
   { title: "Feed Governance", url: "/feed-governance", icon: Megaphone },
   { title: "Content Taxonomy", url: "/content-taxonomy", icon: Tag },
   { title: "Access Control", url: "/access-control", icon: Lock },
