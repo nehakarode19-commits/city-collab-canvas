@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Bot, Plus, Link, FileText, CheckCircle, XCircle, Eye, Clock, Globe } from "lucide-react";
+import { Bot, Plus, Link, FileText, CheckCircle, XCircle, Eye, Clock, Globe, Trash2, Users } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -54,15 +54,30 @@ const categoryOptions = [
   { value: "reports", label: "Reports" },
 ];
 
+const visibilityOptions = [
+  { value: "public", label: "Public (Everyone)" },
+  { value: "members_only", label: "Members Only" },
+  { value: "admins", label: "Admins Only" },
+  { value: "department", label: "Department Specific" },
+];
+
 export default function GovBotLibrarian() {
   const [activeTab, setActiveTab] = useState("content");
   const [isAddUrlOpen, setIsAddUrlOpen] = useState(false);
+  const [isCreateBotOpen, setIsCreateBotOpen] = useState(false);
   const [previewContent, setPreviewContent] = useState<GovBotContent | null>(null);
   const [rejectReason, setRejectReason] = useState("");
   const [urlForm, setUrlForm] = useState({
     url: "",
     category: "",
     crawl_frequency_hours: 24,
+  });
+  const [botForm, setBotForm] = useState({
+    name: "",
+    description: "",
+    urls: [""],
+    visibility: "public",
+    category: "",
   });
 
   const queryClient = useQueryClient();
@@ -154,16 +169,150 @@ export default function GovBotLibrarian() {
   const pendingCount = content?.filter((c) => c.status === "pending").length || 0;
   const activeUrlsCount = trustedUrls?.filter((u) => u.is_active).length || 0;
 
+  const addUrlField = () => {
+    setBotForm({ ...botForm, urls: [...botForm.urls, ""] });
+  };
+
+  const removeUrlField = (index: number) => {
+    setBotForm({ ...botForm, urls: botForm.urls.filter((_, i) => i !== index) });
+  };
+
+  const updateUrlField = (index: number, value: string) => {
+    const newUrls = [...botForm.urls];
+    newUrls[index] = value;
+    setBotForm({ ...botForm, urls: newUrls });
+  };
+
+  const handleCreateBot = () => {
+    const validUrls = botForm.urls.filter(url => url.trim() !== "");
+    if (!botForm.name.trim()) {
+      toast.error("Bot name is required");
+      return;
+    }
+    if (validUrls.length === 0) {
+      toast.error("At least one URL is required");
+      return;
+    }
+    // Here you would save the bot configuration
+    toast.success(`Bot "${botForm.name}" created with ${validUrls.length} URL(s)`);
+    setIsCreateBotOpen(false);
+    setBotForm({ name: "", description: "", urls: [""], visibility: "public", category: "" });
+  };
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <div className="h-10 w-10 rounded-lg bg-success/10 flex items-center justify-center">
-          <Bot className="h-5 w-5 text-success" />
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-lg bg-success/10 flex items-center justify-center">
+            <Bot className="h-5 w-5 text-success" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">GovBot Librarian</h1>
+            <p className="text-muted-foreground">Manage trusted sources and moderate retrieved content</p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">GovBot Librarian</h1>
-          <p className="text-muted-foreground">Manage trusted sources and moderate retrieved content</p>
-        </div>
+        <Dialog open={isCreateBotOpen} onOpenChange={setIsCreateBotOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              Create Bot
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Create New Bot</DialogTitle>
+              <DialogDescription>Configure a new bot with trusted URLs and visibility settings</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+              <div className="space-y-2">
+                <Label>Bot Name</Label>
+                <Input
+                  value={botForm.name}
+                  onChange={(e) => setBotForm({ ...botForm, name: e.target.value })}
+                  placeholder="e.g., Legislative Updates Bot"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Description</Label>
+                <Textarea
+                  value={botForm.description}
+                  onChange={(e) => setBotForm({ ...botForm, description: e.target.value })}
+                  placeholder="Describe what this bot does..."
+                  rows={2}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Category</Label>
+                <Select
+                  value={botForm.category}
+                  onValueChange={(v) => setBotForm({ ...botForm, category: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categoryOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label>URLs to Monitor</Label>
+                  <Button type="button" variant="outline" size="sm" onClick={addUrlField}>
+                    <Plus className="h-3 w-3 mr-1" />
+                    Add URL
+                  </Button>
+                </div>
+                <div className="space-y-2">
+                  {botForm.urls.map((url, index) => (
+                    <div key={index} className="flex gap-2">
+                      <Input
+                        value={url}
+                        onChange={(e) => updateUrlField(index, e.target.value)}
+                        placeholder="https://www.government.gov/news"
+                      />
+                      {botForm.urls.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => removeUrlField(index)}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  <Users className="h-4 w-4" />
+                  Who Can See This Bot
+                </Label>
+                <Select
+                  value={botForm.visibility}
+                  onValueChange={(v) => setBotForm({ ...botForm, visibility: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select visibility" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {visibilityOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsCreateBotOpen(false)}>Cancel</Button>
+              <Button onClick={handleCreateBot}>Create Bot</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Stats */}
