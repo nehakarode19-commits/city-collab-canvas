@@ -24,17 +24,11 @@ const mainNavItems = [
   { title: "Sponsorships", url: "/sponsorships", icon: Award },
   { title: "Volunteering", url: "/volunteering", icon: Heart },
   { title: "Relationships", url: "/relationships", icon: Network },
-];
-
-const adminNavItems = [
   { title: "Feed Governance", url: "/feed-governance", icon: Megaphone },
   { title: "Channel Management", url: "/channels", icon: Hash },
   { title: "Sponsor Analytics", url: "/sponsor-analytics", icon: BarChart3 },
   { title: "City Collaborations", url: "/collaborations", icon: Handshake },
   { title: "GovBot Librarian", url: "/govbot", icon: Bot },
-];
-
-const secondaryNavItems = [
   { title: "Reports", url: "/reports", icon: BarChart3 },
 ];
 
@@ -61,50 +55,6 @@ export function AdminSidebar() {
                     <NavLink
                       to={item.url}
                       end={item.url === "/"}
-                      className="hover:bg-sidebar-accent"
-                      activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
-                    >
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel>Administration</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {adminNavItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink
-                      to={item.url}
-                      className="hover:bg-sidebar-accent"
-                      activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
-                    >
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel>System</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {secondaryNavItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink
-                      to={item.url}
                       className="hover:bg-sidebar-accent"
                       activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
                     >
