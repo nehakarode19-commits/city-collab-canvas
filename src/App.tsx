@@ -33,6 +33,9 @@ import OnboardingWorkflow from "./pages/OnboardingWorkflow";
 import SponsorAnalytics from "./pages/SponsorAnalytics";
 import CityCollaborations from "./pages/CityCollaborations";
 import GovBotLibrarian from "./pages/GovBotLibrarian";
+import FeedGovernance from "./pages/FeedGovernance";
+import ContentTaxonomy from "./pages/ContentTaxonomy";
+import AccessControl from "./pages/AccessControl";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -73,6 +76,9 @@ const App = () => (
           <Route path="/sponsor-analytics" element={<AdminLayout><SponsorAnalytics /></AdminLayout>} />
           <Route path="/collaborations" element={<AdminLayout><CityCollaborations /></AdminLayout>} />
           <Route path="/govbot" element={<AdminLayout><GovBotLibrarian /></AdminLayout>} />
+          <Route path="/feed-governance" element={<AdminLayout><FeedGovernance /></AdminLayout>} />
+          <Route path="/content-taxonomy" element={<AdminLayout><ContentTaxonomy /></AdminLayout>} />
+          <Route path="/access-control" element={<AdminLayout><AccessControl /></AdminLayout>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
