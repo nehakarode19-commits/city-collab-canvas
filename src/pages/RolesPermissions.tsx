@@ -27,8 +27,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Shield, Users as UsersIcon, User, Settings } from "lucide-react";
+import { Shield, Users as UsersIcon, User, Settings, History } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { RoleMigrationLogs } from "@/components/admin/RoleMigrationLogs";
 
 const roleDescriptions = {
   admin: {
