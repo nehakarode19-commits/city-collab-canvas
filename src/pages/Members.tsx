@@ -8,7 +8,7 @@ import { UserProfileManagement } from "@/components/admin/UserProfileManagement"
 
 const Members = () => {
   const [addModalOpen, setAddModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("roster");
+  const [activeTab, setActiveTab] = useState("profiles");
 
   return (
     <>
@@ -25,19 +25,15 @@ const Members = () => {
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
           <TabsList className="grid w-full grid-cols-2 lg:w-auto lg:inline-grid">
-            <TabsTrigger value="roster" className="flex items-center gap-2">
-              <Upload className="h-4 w-4" />
-              Roster
-            </TabsTrigger>
             <TabsTrigger value="profiles" className="flex items-center gap-2">
               <User className="h-4 w-4" />
               User Profiles
             </TabsTrigger>
+            <TabsTrigger value="roster" className="flex items-center gap-2">
+              <Upload className="h-4 w-4" />
+              Roster
+            </TabsTrigger>
           </TabsList>
-
-          <TabsContent value="roster">
-            <RosterManagementTab />
-          </TabsContent>
 
           <TabsContent value="profiles" className="space-y-4">
             <div className="flex items-center justify-end">
@@ -47,6 +43,10 @@ const Members = () => {
               </Button>
             </div>
             <UserProfileManagement />
+          </TabsContent>
+
+          <TabsContent value="roster">
+            <RosterManagementTab />
           </TabsContent>
         </Tabs>
       </div>
