@@ -199,7 +199,13 @@ const Members = () => {
             <RosterManagementTab />
           </TabsContent>
 
-          <TabsContent value="profiles">
+          <TabsContent value="profiles" className="space-y-4">
+            <div className="flex items-center justify-end">
+              <Button onClick={() => setAddModalOpen(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Member
+              </Button>
+            </div>
             <UserProfileManagement />
           </TabsContent>
         </Tabs>
