@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { DollarSign, Users, UserCheck, UserX, Plus, ClipboardList } from "lucide-react";
+import { DollarSign, Users, UserCheck, UserX, Plus, ClipboardList, BarChart3, FileText } from "lucide-react";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { TierCard } from "@/components/sponsorships/TierCard";
 import { SponsorCard } from "@/components/sponsorships/SponsorCard";
@@ -10,6 +10,8 @@ import { CreateSponsorModal } from "@/components/sponsorships/CreateSponsorModal
 import { CreatePackageModal } from "@/components/sponsorships/CreatePackageModal";
 import { EditTierModal } from "@/components/sponsorships/EditTierModal";
 import { LogBenefitsModal } from "@/components/sponsorships/LogBenefitsModal";
+import { StrategicPartnerDashboard } from "@/components/admin/StrategicPartnerDashboard";
+import { ContentVettingWorkflow } from "@/components/admin/ContentVettingWorkflow";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const tiers = [
@@ -204,9 +206,17 @@ const Sponsorships = () => {
 
       {/* Tabs for Sponsors and Packages */}
       <Tabs defaultValue="sponsors" className="space-y-6">
-        <TabsList>
+        <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid">
           <TabsTrigger value="sponsors">Sponsor Accounts</TabsTrigger>
-          <TabsTrigger value="packages">Sponsor Packages</TabsTrigger>
+          <TabsTrigger value="packages">Packages</TabsTrigger>
+          <TabsTrigger value="analytics" className="flex items-center gap-2">
+            <BarChart3 className="h-4 w-4" />
+            Partner Analytics
+          </TabsTrigger>
+          <TabsTrigger value="content" className="flex items-center gap-2">
+            <FileText className="h-4 w-4" />
+            Content Vetting
+          </TabsTrigger>
         </TabsList>
 
         {/* Sponsor Accounts Tab */}
@@ -224,6 +234,16 @@ const Sponsorships = () => {
         {/* Packages Tab */}
         <TabsContent value="packages">
           <PackagesTable packages={mockPackages} />
+        </TabsContent>
+
+        {/* Partner Analytics Tab */}
+        <TabsContent value="analytics">
+          <StrategicPartnerDashboard />
+        </TabsContent>
+
+        {/* Content Vetting Tab */}
+        <TabsContent value="content">
+          <ContentVettingWorkflow />
         </TabsContent>
       </Tabs>
 
