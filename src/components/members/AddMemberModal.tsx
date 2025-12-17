@@ -41,6 +41,8 @@ export function AddMemberModal({ open, onOpenChange }: AddMemberModalProps) {
   const [facebook, setFacebook] = useState("");
   const [linkedin, setLinkedin] = useState("");
   const [medal, setMedal] = useState("");
+  const [certificateFile, setCertificateFile] = useState<File | null>(null);
+  const [certificateFileName, setCertificateFileName] = useState("");
   const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
   const [profilePhotoPreview, setProfilePhotoPreview] = useState<string>("");
 
@@ -267,9 +269,34 @@ export function AddMemberModal({ open, onOpenChange }: AddMemberModalProps) {
             {/* Certifications */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Certifications</h3>
-              <div className="space-y-2">
-                <Label htmlFor="medal">Medal</Label>
-                <Input id="medal" value={medal} onChange={(e) => setMedal(e.target.value)} placeholder="Enter medal or certification" />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="medal">Medal</Label>
+                  <Input id="medal" value={medal} onChange={(e) => setMedal(e.target.value)} placeholder="Enter medal or certification" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="certificate">Attachment Certificate</Label>
+                  <Input 
+                    id="certificate" 
+                    type="file" 
+                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        if (file.size > 10 * 1024 * 1024) {
+                          toast.error("File size must be less than 10MB");
+                          return;
+                        }
+                        setCertificateFile(file);
+                        setCertificateFileName(file.name);
+                        toast.success("Certificate uploaded successfully");
+                      }
+                    }}
+                  />
+                  {certificateFileName && (
+                    <p className="text-xs text-muted-foreground">Uploaded: {certificateFileName}</p>
+                  )}
+                </div>
               </div>
             </div>
 
