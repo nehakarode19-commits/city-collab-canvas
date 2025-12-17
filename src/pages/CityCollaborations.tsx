@@ -243,13 +243,17 @@ export default function CityCollaborations() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredOrganizations.map((org) => {
-              const hasCollaboration = collaborations?.some(
+          {filteredOrganizations.map((org, index) => {
+              // Show "Send Request" button only for the first 2-3 organizations
+              const showSendRequest = index >= filteredOrganizations.length - 3;
+              const hasCollaboration = !showSendRequest || collaborations?.some(
                 c => c.partner_org_id === org.id || c.initiator_org_id === org.id
               );
               const existingCollab = collaborations?.find(
                 c => c.partner_org_id === org.id || c.initiator_org_id === org.id
               );
+              // Mock statuses for organizations without real collaborations
+              const mockStatus: CollaborationStatus = index % 3 === 0 ? "active" : index % 3 === 1 ? "pending" : "active";
 
               return (
                 <Card key={org.id} className="hover:shadow-md transition-shadow">
@@ -276,23 +280,23 @@ export default function CityCollaborations() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Government organization available for inter-city collaboration and resource sharing.
-                    </p>
-                    {hasCollaboration ? (
-                      <Badge className={statusColors[existingCollab?.status || "pending"]}>
-                        {existingCollab?.status === "active" ? (
-                          <><CheckCircle className="h-3 w-3 mr-1" /> Active Collaboration</>
-                        ) : existingCollab?.status === "pending" ? (
-                          <><Clock className="h-3 w-3 mr-1" /> Request Pending</>
-                        ) : (
-                          existingCollab?.status
-                        )}
-                      </Badge>
-                    ) : (
-                      <Button 
-                        className="w-full" 
-                        onClick={() => setConfirmDialog({ open: true, org, type: "org" })}
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Government organization available for inter-city collaboration and resource sharing.
+                  </p>
+                  {hasCollaboration && !showSendRequest ? (
+                    <Badge className={statusColors[existingCollab?.status || mockStatus]}>
+                      {(existingCollab?.status || mockStatus) === "active" ? (
+                        <><CheckCircle className="h-3 w-3 mr-1" /> Active Collaboration</>
+                      ) : (existingCollab?.status || mockStatus) === "pending" ? (
+                        <><Clock className="h-3 w-3 mr-1" /> Request Pending</>
+                      ) : (
+                        existingCollab?.status || mockStatus
+                      )}
+                    </Badge>
+                  ) : (
+                    <Button 
+                      className="w-full" 
+                      onClick={() => setConfirmDialog({ open: true, org, type: "org" })}
                       >
                         <Send className="h-4 w-4 mr-2" />
                         Send Request
