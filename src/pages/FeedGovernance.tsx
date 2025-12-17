@@ -171,7 +171,7 @@ export default function FeedGovernance() {
                 <DialogTrigger asChild>
                   <Button>
                     <Plus className="h-4 w-4 mr-2" />
-                    Create Announcement
+                    Create Feed
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-lg">
