@@ -204,19 +204,19 @@ export default function CityCollaborations() {
             <Card className="text-center py-4">
               <CardContent className="p-0">
                 <p className="text-2xl font-bold text-primary">{activeCollaborations.length}</p>
-                <p className="text-sm text-muted-foreground">Active</p>
+                <p className="text-sm text-muted-foreground">Accepted</p>
               </CardContent>
             </Card>
             <Card className="text-center py-4">
               <CardContent className="p-0">
                 <p className="text-2xl font-bold text-primary">{pendingRequests.length}</p>
-                <p className="text-sm text-muted-foreground">Pending</p>
+                <p className="text-sm text-muted-foreground">Request Pending</p>
               </CardContent>
             </Card>
             <Card className="text-center py-4">
               <CardContent className="p-0">
-                <p className="text-2xl font-bold text-primary">{filteredOrganizations.length}</p>
-                <p className="text-sm text-muted-foreground">Organizations</p>
+                <p className="text-2xl font-bold text-primary">{pendingRequests.length}</p>
+                <p className="text-sm text-muted-foreground">Acceptance Pending</p>
               </CardContent>
             </Card>
           </div>
@@ -314,19 +314,19 @@ export default function CityCollaborations() {
             <Card className="text-center py-4">
               <CardContent className="p-0">
                 <p className="text-2xl font-bold text-primary">{mockDepartments.filter((_, i) => i % 2 === 0).length}</p>
-                <p className="text-sm text-muted-foreground">Active</p>
+                <p className="text-sm text-muted-foreground">Accepted</p>
               </CardContent>
             </Card>
             <Card className="text-center py-4">
               <CardContent className="p-0">
                 <p className="text-2xl font-bold text-primary">{mockDepartments.filter((_, i) => i % 2 !== 0 && i < mockDepartments.length - 3).length}</p>
-                <p className="text-sm text-muted-foreground">Pending</p>
+                <p className="text-sm text-muted-foreground">Request Pending</p>
               </CardContent>
             </Card>
             <Card className="text-center py-4">
               <CardContent className="p-0">
-                <p className="text-2xl font-bold text-primary">{filteredDepartments.length}</p>
-                <p className="text-sm text-muted-foreground">Departments</p>
+                <p className="text-2xl font-bold text-primary">{mockDepartments.filter((_, i) => i >= mockDepartments.length - 3).length}</p>
+                <p className="text-sm text-muted-foreground">Acceptance Pending</p>
               </CardContent>
             </Card>
           </div>
