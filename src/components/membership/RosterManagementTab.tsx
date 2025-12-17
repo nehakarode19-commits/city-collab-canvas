@@ -40,7 +40,17 @@ const statusIcons: Record<string, React.ReactNode> = {
 export function RosterManagementTab() {
   const [isDragging, setIsDragging] = useState(false);
 
-  const { data: uploads, isLoading } = useQuery({
+  // Mock data for demonstration
+  const mockUploads: RosterUpload[] = [
+    { id: "1", file_name: "Q1_2024_roster.xlsx", status: "completed", total_records: 245, new_users: 12, updated_users: 28, deactivated_users: 3, errors: [], created_at: "2024-01-15T10:30:00Z", processed_at: "2024-01-15T10:35:00Z" },
+    { id: "2", file_name: "December_updates.csv", status: "completed", total_records: 180, new_users: 5, updated_users: 15, deactivated_users: 8, errors: [], created_at: "2024-01-10T14:20:00Z", processed_at: "2024-01-10T14:25:00Z" },
+    { id: "3", file_name: "IT_dept_roster.xlsx", status: "processing", total_records: 45, new_users: 2, updated_users: 8, deactivated_users: 0, errors: [], created_at: "2024-01-08T09:00:00Z", processed_at: null },
+    { id: "4", file_name: "HR_annual_review.csv", status: "failed", total_records: 320, new_users: 0, updated_users: 0, deactivated_users: 0, errors: [{ row: 45, message: "Invalid email format" }], created_at: "2024-01-05T16:45:00Z", processed_at: null },
+    { id: "5", file_name: "Finance_team.xlsx", status: "completed", total_records: 62, new_users: 4, updated_users: 10, deactivated_users: 1, errors: [], created_at: "2024-01-02T11:15:00Z", processed_at: "2024-01-02T11:18:00Z" },
+    { id: "6", file_name: "Parks_dept_update.csv", status: "pending", total_records: 38, new_users: 0, updated_users: 0, deactivated_users: 0, errors: [], created_at: "2024-01-01T08:00:00Z", processed_at: null },
+  ];
+
+  const { data: dbUploads, isLoading } = useQuery({
     queryKey: ["roster-uploads"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -52,6 +62,8 @@ export function RosterManagementTab() {
       return data as RosterUpload[];
     },
   });
+
+  const uploads = dbUploads?.length ? dbUploads : mockUploads;
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();

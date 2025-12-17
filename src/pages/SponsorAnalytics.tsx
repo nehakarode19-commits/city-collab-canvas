@@ -48,7 +48,26 @@ export default function SponsorAnalytics() {
 
   const queryClient = useQueryClient();
 
-  const { data: contracts, isLoading: loadingContracts } = useQuery({
+  // Mock data for demonstration
+  const mockContracts: SponsorContract[] = [
+    { id: "1", sponsor_id: "sp-001-acme", contract_start: "2024-01-01", contract_end: "2024-06-30", guaranteed_impressions: 50000, actual_impressions: 32500, status: "active" },
+    { id: "2", sponsor_id: "sp-002-techco", contract_start: "2024-01-15", contract_end: "2024-04-15", guaranteed_impressions: 25000, actual_impressions: 18750, status: "active" },
+    { id: "3", sponsor_id: "sp-003-globalinc", contract_start: "2023-10-01", contract_end: "2024-01-31", guaranteed_impressions: 75000, actual_impressions: 71200, status: "active" },
+    { id: "4", sponsor_id: "sp-004-localbank", contract_start: "2024-02-01", contract_end: "2024-08-01", guaranteed_impressions: 100000, actual_impressions: 8500, status: "active" },
+    { id: "5", sponsor_id: "sp-005-cityhealth", contract_start: "2023-07-01", contract_end: "2023-12-31", guaranteed_impressions: 40000, actual_impressions: 42300, status: "completed" },
+    { id: "6", sponsor_id: "sp-006-eduplus", contract_start: "2024-03-01", contract_end: "2024-09-01", guaranteed_impressions: 60000, actual_impressions: 0, status: "pending" },
+  ];
+
+  const mockAnalytics: SponsorAnalytic[] = [
+    { id: "1", sponsor_id: "sp-001", period_start: "2024-01-15", period_end: "2024-01-21", impressions: 8500, content_downloads: 245, engagement_clicks: 1820, unique_viewers: 3200 },
+    { id: "2", sponsor_id: "sp-001", period_start: "2024-01-08", period_end: "2024-01-14", impressions: 7800, content_downloads: 198, engagement_clicks: 1650, unique_viewers: 2950 },
+    { id: "3", sponsor_id: "sp-002", period_start: "2024-01-01", period_end: "2024-01-07", impressions: 9200, content_downloads: 312, engagement_clicks: 2100, unique_viewers: 3800 },
+    { id: "4", sponsor_id: "sp-003", period_start: "2023-12-25", period_end: "2023-12-31", impressions: 6500, content_downloads: 156, engagement_clicks: 1200, unique_viewers: 2400 },
+    { id: "5", sponsor_id: "sp-001", period_start: "2023-12-18", period_end: "2023-12-24", impressions: 7100, content_downloads: 178, engagement_clicks: 1450, unique_viewers: 2680 },
+    { id: "6", sponsor_id: "sp-002", period_start: "2023-12-11", period_end: "2023-12-17", impressions: 8900, content_downloads: 289, engagement_clicks: 1950, unique_viewers: 3450 },
+  ];
+
+  const { data: dbContracts, isLoading: loadingContracts } = useQuery({
     queryKey: ["sponsor-contracts"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -60,7 +79,7 @@ export default function SponsorAnalytics() {
     },
   });
 
-  const { data: analytics } = useQuery({
+  const { data: dbAnalytics } = useQuery({
     queryKey: ["sponsor-analytics"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -72,6 +91,9 @@ export default function SponsorAnalytics() {
       return data as SponsorAnalytic[];
     },
   });
+
+  const contracts = dbContracts?.length ? dbContracts : mockContracts;
+  const analytics = dbAnalytics?.length ? dbAnalytics : mockAnalytics;
 
   const createContractMutation = useMutation({
     mutationFn: async (data: typeof contractForm) => {

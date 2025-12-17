@@ -42,7 +42,17 @@ export default function RetireeMarketplace() {
 
   const queryClient = useQueryClient();
 
-  const { data: retirees, isLoading } = useQuery({
+  // Mock data for demonstration
+  const mockRetirees: Retiree[] = [
+    { id: "1", user_id: "u1", personal_email: "john.personal@gmail.com", identity_verified: true, status: "active", guild_member: true, available_for_work: true, hourly_rate: 75, bio: "25 years experience in public administration", expertise: ["Project Management", "Budget Analysis"], profiles: { full_name: "John Anderson", email: "john.anderson@city.gov" } },
+    { id: "2", user_id: "u2", personal_email: "mary.smith@yahoo.com", identity_verified: true, status: "active", guild_member: false, available_for_work: true, hourly_rate: 60, bio: "Former IT Director with expertise in systems integration", expertise: ["IT Management", "Cloud Systems"], profiles: { full_name: "Mary Smith", email: "mary.smith@city.gov" } },
+    { id: "3", user_id: "u3", personal_email: null, identity_verified: false, status: "pending", guild_member: false, available_for_work: false, hourly_rate: null, bio: "Retired from Parks department", expertise: ["Landscape Design", "Event Planning"], profiles: { full_name: "Robert Johnson", email: "robert.johnson@city.gov" } },
+    { id: "4", user_id: "u4", personal_email: "sandra.lee@outlook.com", identity_verified: true, status: "active", guild_member: true, available_for_work: true, hourly_rate: 85, bio: "Former City Planner with urban development expertise", expertise: ["Urban Planning", "Zoning", "Community Outreach"], profiles: { full_name: "Sandra Lee", email: "sandra.lee@city.gov" } },
+    { id: "5", user_id: "u5", personal_email: "david.brown@gmail.com", identity_verified: true, status: "inactive", guild_member: false, available_for_work: false, hourly_rate: 50, bio: "30 years in public works maintenance", expertise: ["Infrastructure", "Safety Compliance"], profiles: { full_name: "David Brown", email: "david.brown@city.gov" } },
+    { id: "6", user_id: "u6", personal_email: null, identity_verified: false, status: "suspended", guild_member: false, available_for_work: false, hourly_rate: null, bio: "Former Finance analyst", expertise: ["Financial Analysis", "Auditing"], profiles: { full_name: "Patricia White", email: "patricia.white@city.gov" } },
+  ];
+
+  const { data: dbRetirees, isLoading } = useQuery({
     queryKey: ["retirees", statusFilter],
     queryFn: async () => {
       let query = supabase
@@ -59,6 +69,8 @@ export default function RetireeMarketplace() {
       return data as unknown as Retiree[];
     },
   });
+
+  const retirees = dbRetirees?.length ? dbRetirees : (statusFilter === "all" ? mockRetirees : mockRetirees.filter(r => r.status === statusFilter));
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: RetireeStatus }) => {
