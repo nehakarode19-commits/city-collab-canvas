@@ -17,12 +17,12 @@ import {
 import { format } from "date-fns";
 import { toast } from "sonner";
 
-// Mock data for announcements
-const mockAnnouncements = [
+// Mock data for feeds
+const mockFeeds = [
   { id: "1", title: "City Hall Closure Notice", content: "City Hall will be closed on January 20th for Martin Luther King Jr. Day", status: "published", priority: "high", jurisdiction: "citywide", department: "Administration", author: "Mayor's Office", verifiedBadge: true, createdAt: "2024-01-15T10:00:00Z", publishedAt: "2024-01-15T10:30:00Z" },
   { id: "2", title: "New Parking Regulations", content: "Updated parking regulations effective February 1st", status: "pending", priority: "medium", jurisdiction: "downtown", department: "Public Works", author: "Transportation Dept", verifiedBadge: true, createdAt: "2024-01-14T14:00:00Z", publishedAt: null },
   { id: "3", title: "Emergency Weather Advisory", content: "Severe weather expected this weekend. Stay indoors.", status: "published", priority: "urgent", jurisdiction: "citywide", department: "Emergency Services", author: "Emergency Management", verifiedBadge: true, createdAt: "2024-01-13T08:00:00Z", publishedAt: "2024-01-13T08:05:00Z" },
-  { id: "4", title: "Budget Meeting Announcement", content: "Annual budget review meeting scheduled for January 25th", status: "draft", priority: "low", jurisdiction: "internal", department: "Finance", author: "City Controller", verifiedBadge: false, createdAt: "2024-01-12T16:00:00Z", publishedAt: null },
+  { id: "4", title: "Budget Meeting", content: "Annual budget review meeting scheduled for January 25th", status: "draft", priority: "low", jurisdiction: "internal", department: "Finance", author: "City Controller", verifiedBadge: false, createdAt: "2024-01-12T16:00:00Z", publishedAt: null },
   { id: "5", title: "IT System Maintenance", content: "Scheduled maintenance window on Saturday 2AM-6AM", status: "scheduled", priority: "medium", jurisdiction: "internal", department: "IT", author: "IT Department", verifiedBadge: true, createdAt: "2024-01-11T11:00:00Z", publishedAt: null },
   { id: "6", title: "Community Event: Town Hall", content: "Join us for an open town hall discussion on community safety", status: "published", priority: "medium", jurisdiction: "citywide", department: "Community Relations", author: "City Council", verifiedBadge: true, createdAt: "2024-01-10T09:00:00Z", publishedAt: "2024-01-10T09:15:00Z" },
 ];
@@ -39,7 +39,7 @@ const mockVerifiedAgencies = [
 
 // Mock visibility rules
 const mockVisibilityRules = [
-  { id: "1", name: "Official Announcements", postType: "official", visibleTo: ["all_users"], departments: ["all"], requiresVerification: true, enabled: true },
+  { id: "1", name: "Official Feeds", postType: "official", visibleTo: ["all_users"], departments: ["all"], requiresVerification: true, enabled: true },
   { id: "2", name: "Emergency Alerts", postType: "emergency", visibleTo: ["all_users"], departments: ["all"], requiresVerification: true, enabled: true },
   { id: "3", name: "Internal Memos", postType: "internal", visibleTo: ["staff"], departments: ["specific"], requiresVerification: false, enabled: true },
   { id: "4", name: "Department Updates", postType: "department", visibleTo: ["department_members"], departments: ["specific"], requiresVerification: false, enabled: true },
@@ -62,9 +62,9 @@ const priorityColors: Record<string, string> = {
 };
 
 export default function FeedGovernance() {
-  const [activeTab, setActiveTab] = useState("announcements");
+  const [activeTab, setActiveTab] = useState("feeds");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [announcementForm, setAnnouncementForm] = useState({
+  const [feedForm, setFeedForm] = useState({
     title: "",
     content: "",
     priority: "medium",
@@ -73,17 +73,17 @@ export default function FeedGovernance() {
   });
 
   const handlePublish = (id: string) => {
-    toast.success("Announcement published successfully");
+    toast.success("Feed published successfully");
   };
 
   const handleReject = (id: string) => {
-    toast.info("Announcement rejected");
+    toast.info("Feed rejected");
   };
 
   const stats = {
-    total: mockAnnouncements.length,
-    published: mockAnnouncements.filter(a => a.status === "published").length,
-    pending: mockAnnouncements.filter(a => a.status === "pending").length,
+    total: mockFeeds.length,
+    published: mockFeeds.filter(a => a.status === "published").length,
+    pending: mockFeeds.filter(a => a.status === "pending").length,
     agencies: mockVerifiedAgencies.filter(a => a.verified).length,
   };
 
@@ -95,7 +95,7 @@ export default function FeedGovernance() {
         </div>
         <div>
           <h1 className="text-2xl font-bold text-foreground">Feed Governance</h1>
-          <p className="text-muted-foreground">Manage announcements, visibility rules, and verified agencies</p>
+          <p className="text-muted-foreground">Manage feeds, visibility rules, and verified agencies</p>
         </div>
       </div>
 
@@ -141,9 +141,9 @@ export default function FeedGovernance() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid">
-          <TabsTrigger value="announcements" className="flex items-center gap-2">
+          <TabsTrigger value="feeds" className="flex items-center gap-2">
             <Megaphone className="h-4 w-4" />
-            Announcements
+            Feeds
           </TabsTrigger>
           <TabsTrigger value="agencies" className="flex items-center gap-2">
             <Building className="h-4 w-4" />
@@ -159,12 +159,12 @@ export default function FeedGovernance() {
           </TabsTrigger>
         </TabsList>
 
-        {/* Announcements Tab */}
-        <TabsContent value="announcements">
+        {/* Feeds Tab */}
+        <TabsContent value="feeds">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle>Official Announcements</CardTitle>
+                <CardTitle>Official Feeds</CardTitle>
                 <CardDescription>Create and manage official broadcasts</CardDescription>
               </div>
               <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
@@ -176,31 +176,31 @@ export default function FeedGovernance() {
                 </DialogTrigger>
                 <DialogContent className="max-w-lg">
                   <DialogHeader>
-                    <DialogTitle>Create Official Announcement</DialogTitle>
+                    <DialogTitle>Create Official Feed</DialogTitle>
                     <DialogDescription>This will be broadcast to users based on jurisdiction</DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <Label>Title</Label>
                       <Input
-                        value={announcementForm.title}
-                        onChange={(e) => setAnnouncementForm({ ...announcementForm, title: e.target.value })}
-                        placeholder="Announcement title"
+                        value={feedForm.title}
+                        onChange={(e) => setFeedForm({ ...feedForm, title: e.target.value })}
+                        placeholder="Feed title"
                       />
                     </div>
                     <div className="space-y-2">
                       <Label>Content</Label>
                       <Textarea
-                        value={announcementForm.content}
-                        onChange={(e) => setAnnouncementForm({ ...announcementForm, content: e.target.value })}
-                        placeholder="Announcement content..."
+                        value={feedForm.content}
+                        onChange={(e) => setFeedForm({ ...feedForm, content: e.target.value })}
+                        placeholder="Feed content..."
                         rows={4}
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label>Priority</Label>
-                        <Select value={announcementForm.priority} onValueChange={(v) => setAnnouncementForm({ ...announcementForm, priority: v })}>
+                        <Select value={feedForm.priority} onValueChange={(v) => setFeedForm({ ...feedForm, priority: v })}>
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
@@ -214,7 +214,7 @@ export default function FeedGovernance() {
                       </div>
                       <div className="space-y-2">
                         <Label>Jurisdiction</Label>
-                        <Select value={announcementForm.jurisdiction} onValueChange={(v) => setAnnouncementForm({ ...announcementForm, jurisdiction: v })}>
+                        <Select value={feedForm.jurisdiction} onValueChange={(v) => setFeedForm({ ...feedForm, jurisdiction: v })}>
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
@@ -229,7 +229,7 @@ export default function FeedGovernance() {
                     </div>
                     <div className="space-y-2">
                       <Label>Department</Label>
-                      <Select value={announcementForm.department} onValueChange={(v) => setAnnouncementForm({ ...announcementForm, department: v })}>
+                      <Select value={feedForm.department} onValueChange={(v) => setFeedForm({ ...feedForm, department: v })}>
                         <SelectTrigger>
                           <SelectValue placeholder="Select department" />
                         </SelectTrigger>
@@ -245,7 +245,7 @@ export default function FeedGovernance() {
                   </div>
                   <DialogFooter>
                     <Button variant="outline" onClick={() => setIsCreateOpen(false)}>Cancel</Button>
-                    <Button onClick={() => { toast.success("Announcement created"); setIsCreateOpen(false); }}>Publish</Button>
+                    <Button onClick={() => { toast.success("Feed created"); setIsCreateOpen(false); }}>Publish</Button>
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
@@ -264,50 +264,50 @@ export default function FeedGovernance() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {mockAnnouncements.map((announcement) => (
-                    <TableRow key={announcement.id}>
+                  {mockFeeds.map((feed) => (
+                    <TableRow key={feed.id}>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <span className="font-medium">{announcement.title}</span>
-                          {announcement.verifiedBadge && (
+                          <span className="font-medium">{feed.title}</span>
+                          {feed.verifiedBadge && (
                             <Shield className="h-4 w-4 text-primary" />
                           )}
                         </div>
                       </TableCell>
                       <TableCell>
                         <div>
-                          <p className="text-sm">{announcement.author}</p>
-                          <p className="text-xs text-muted-foreground">{announcement.department}</p>
+                          <p className="text-sm">{feed.author}</p>
+                          <p className="text-xs text-muted-foreground">{feed.department}</p>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge className={priorityColors[announcement.priority]}>
-                          {announcement.priority}
+                        <Badge className={priorityColors[feed.priority]}>
+                          {feed.priority}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1">
-                          {announcement.jurisdiction === "citywide" ? (
+                          {feed.jurisdiction === "citywide" ? (
                             <Globe className="h-3 w-3" />
-                          ) : announcement.jurisdiction === "internal" ? (
+                          ) : feed.jurisdiction === "internal" ? (
                             <Lock className="h-3 w-3" />
                           ) : null}
-                          <span className="text-sm capitalize">{announcement.jurisdiction}</span>
+                          <span className="text-sm capitalize">{feed.jurisdiction}</span>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={statusColors[announcement.status]}>{announcement.status}</Badge>
+                        <Badge variant={statusColors[feed.status]}>{feed.status}</Badge>
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">
-                        {format(new Date(announcement.createdAt), "MMM d, HH:mm")}
+                        {format(new Date(feed.createdAt), "MMM d, HH:mm")}
                       </TableCell>
                       <TableCell className="text-right">
-                        {announcement.status === "pending" && (
+                        {feed.status === "pending" && (
                           <div className="flex items-center justify-end gap-1">
-                            <Button variant="ghost" size="sm" onClick={() => handlePublish(announcement.id)}>
+                            <Button variant="ghost" size="sm" onClick={() => handlePublish(feed.id)}>
                               <CheckCircle className="h-4 w-4 text-success" />
                             </Button>
-                            <Button variant="ghost" size="sm" onClick={() => handleReject(announcement.id)}>
+                            <Button variant="ghost" size="sm" onClick={() => handleReject(feed.id)}>
                               <XCircle className="h-4 w-4 text-destructive" />
                             </Button>
                           </div>
@@ -449,8 +449,8 @@ export default function FeedGovernance() {
               <CardContent className="space-y-6">
                 <div className="flex items-center justify-between p-4 rounded-lg border">
                   <div>
-                    <p className="font-medium">Official Announcements - Verified Only</p>
-                    <p className="text-sm text-muted-foreground">Only Class A.3 verified agencies can create official announcements</p>
+                    <p className="font-medium">Official Feeds - Verified Only</p>
+                    <p className="text-sm text-muted-foreground">Only Class A.3 verified agencies can create official feeds</p>
                   </div>
                   <Switch defaultChecked />
                 </div>
