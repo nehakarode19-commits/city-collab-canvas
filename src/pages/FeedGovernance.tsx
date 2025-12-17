@@ -27,6 +27,23 @@ const mockFeeds = [
   { id: "6", title: "Community Event: Town Hall", content: "Join us for an open town hall discussion on community safety", status: "published", priority: "medium", jurisdiction: "citywide", department: "Community Relations", author: "City Council", verifiedBadge: true, createdAt: "2024-01-10T09:00:00Z", publishedAt: "2024-01-10T09:15:00Z" },
 ];
 
+// Mock data for sponsor feeds requiring approval
+const mockSponsorFeeds = [
+  { id: "s1", title: "Employee Wellness Program Launch", content: "Introducing our comprehensive wellness program with fitness discounts, mental health resources, and quarterly health screenings for all city employees.", sponsor: "HealthFirst Insurance", sponsorLogo: "🏥", sponsorTier: "Gold", targetAudience: "All Employees", category: "Benefits", status: "pending", submittedAt: "2024-01-16T09:00:00Z", reviewedAt: null, reviewedBy: null },
+  { id: "s2", title: "Retirement Planning Workshop", content: "Free retirement planning sessions available this month. Learn about pension options, 401k strategies, and financial planning for your future.", sponsor: "SecureRetire Financial", sponsorLogo: "💼", sponsorTier: "Silver", targetAudience: "Staff 50+", category: "Financial", status: "pending", submittedAt: "2024-01-15T14:30:00Z", reviewedAt: null, reviewedBy: null },
+  { id: "s3", title: "Professional Development Courses", content: "Access to 500+ online courses for skill development. Topics include leadership, project management, and technical certifications.", sponsor: "LearnPro Academy", sponsorLogo: "📚", sponsorTier: "Gold", targetAudience: "All Employees", category: "Training", status: "approved", submittedAt: "2024-01-14T11:00:00Z", reviewedAt: "2024-01-14T15:00:00Z", reviewedBy: "Admin" },
+  { id: "s4", title: "Discount Program: Office Supplies", content: "Exclusive 30% discount on office supplies and equipment for all city departments. Valid through Q1 2024.", sponsor: "OfficeMax Pro", sponsorLogo: "📎", sponsorTier: "Bronze", targetAudience: "Department Heads", category: "Supplies", status: "rejected", submittedAt: "2024-01-13T10:00:00Z", reviewedAt: "2024-01-13T16:00:00Z", reviewedBy: "Admin", rejectionReason: "Content requires revision - pricing details unclear" },
+  { id: "s5", title: "Mental Health Awareness Month", content: "Join us for a series of mental health workshops and access free counseling sessions throughout February.", sponsor: "MindCare Partners", sponsorLogo: "🧠", sponsorTier: "Platinum", targetAudience: "All Employees", category: "Wellness", status: "pending", submittedAt: "2024-01-16T08:00:00Z", reviewedAt: null, reviewedBy: null },
+  { id: "s6", title: "Electric Vehicle Charging Stations", content: "New EV charging stations now available at City Hall parking. Special rates for city employees.", sponsor: "GreenCharge Solutions", sponsorLogo: "⚡", sponsorTier: "Gold", targetAudience: "All Employees", category: "Sustainability", status: "pending", submittedAt: "2024-01-15T16:00:00Z", reviewedAt: null, reviewedBy: null },
+];
+
+const sponsorTierColors: Record<string, string> = {
+  Platinum: "bg-gradient-to-r from-purple-500 to-pink-500 text-white",
+  Gold: "bg-gradient-to-r from-yellow-400 to-orange-500 text-white",
+  Silver: "bg-gradient-to-r from-gray-300 to-gray-400 text-gray-800",
+  Bronze: "bg-gradient-to-r from-orange-300 to-orange-400 text-white",
+};
+
 // Mock data for verified agencies
 const mockVerifiedAgencies = [
   { id: "1", name: "Mayor's Office", domain: "mayor.city.gov", verified: true, canBroadcast: true, postTypes: ["official", "emergency"], verifiedAt: "2023-06-01T00:00:00Z" },
@@ -71,6 +88,10 @@ export default function FeedGovernance() {
     jurisdiction: "citywide",
     department: "",
   });
+  const [selectedSponsorFeed, setSelectedSponsorFeed] = useState<typeof mockSponsorFeeds[0] | null>(null);
+  const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState("");
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   const handlePublish = (id: string) => {
     toast.success("Feed published successfully");
@@ -78,6 +99,36 @@ export default function FeedGovernance() {
 
   const handleReject = (id: string) => {
     toast.info("Feed rejected");
+  };
+
+  const handleSponsorApprove = (feed: typeof mockSponsorFeeds[0]) => {
+    toast.success(`Sponsor feed "${feed.title}" approved and published`);
+    setSelectedSponsorFeed(null);
+    setIsPreviewOpen(false);
+  };
+
+  const handleSponsorReject = () => {
+    if (!selectedSponsorFeed) return;
+    toast.error(`Sponsor feed "${selectedSponsorFeed.title}" rejected`);
+    setIsRejectDialogOpen(false);
+    setRejectionReason("");
+    setSelectedSponsorFeed(null);
+  };
+
+  const openRejectDialog = (feed: typeof mockSponsorFeeds[0]) => {
+    setSelectedSponsorFeed(feed);
+    setIsRejectDialogOpen(true);
+  };
+
+  const openPreview = (feed: typeof mockSponsorFeeds[0]) => {
+    setSelectedSponsorFeed(feed);
+    setIsPreviewOpen(true);
+  };
+
+  const sponsorStats = {
+    pending: mockSponsorFeeds.filter(f => f.status === "pending").length,
+    approved: mockSponsorFeeds.filter(f => f.status === "approved").length,
+    rejected: mockSponsorFeeds.filter(f => f.status === "rejected").length,
   };
 
   const stats = {
@@ -140,10 +191,19 @@ export default function FeedGovernance() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid">
+        <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
           <TabsTrigger value="feeds" className="flex items-center gap-2">
             <Megaphone className="h-4 w-4" />
             Feeds
+          </TabsTrigger>
+          <TabsTrigger value="sponsor-approval" className="flex items-center gap-2">
+            <Tag className="h-4 w-4" />
+            Sponsor Approval
+            {sponsorStats.pending > 0 && (
+              <Badge variant="destructive" className="ml-1 h-5 w-5 p-0 flex items-center justify-center text-xs">
+                {sponsorStats.pending}
+              </Badge>
+            )}
           </TabsTrigger>
           <TabsTrigger value="agencies" className="flex items-center gap-2">
             <Building className="h-4 w-4" />
@@ -321,6 +381,170 @@ export default function FeedGovernance() {
           </Card>
         </TabsContent>
 
+        {/* Sponsor Approval Tab */}
+        <TabsContent value="sponsor-approval">
+          <div className="space-y-6">
+            {/* Sponsor Stats */}
+            <div className="grid grid-cols-3 gap-4">
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-warning" />
+                    <span className="text-sm text-muted-foreground">Pending Review</span>
+                  </div>
+                  <div className="text-2xl font-bold mt-1 text-warning">{sponsorStats.pending}</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-success" />
+                    <span className="text-sm text-muted-foreground">Approved</span>
+                  </div>
+                  <div className="text-2xl font-bold mt-1 text-success">{sponsorStats.approved}</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-2">
+                    <XCircle className="h-4 w-4 text-destructive" />
+                    <span className="text-sm text-muted-foreground">Rejected</span>
+                  </div>
+                  <div className="text-2xl font-bold mt-1 text-destructive">{sponsorStats.rejected}</div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Tag className="h-5 w-5" />
+                  Sponsor Feed Submissions
+                </CardTitle>
+                <CardDescription>
+                  Review and approve content submitted by sponsors before it becomes visible to users
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Feed Title</TableHead>
+                      <TableHead>Sponsor</TableHead>
+                      <TableHead>Tier</TableHead>
+                      <TableHead>Target Audience</TableHead>
+                      <TableHead>Category</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Submitted</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {mockSponsorFeeds.map((feed) => (
+                      <TableRow key={feed.id}>
+                        <TableCell>
+                          <div className="max-w-[200px]">
+                            <p className="font-medium truncate">{feed.title}</p>
+                            <p className="text-xs text-muted-foreground truncate">{feed.content.slice(0, 60)}...</p>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <span className="text-lg">{feed.sponsorLogo}</span>
+                            <span className="text-sm">{feed.sponsor}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={sponsorTierColors[feed.sponsorTier]}>
+                            {feed.sponsorTier}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1">
+                            <Users className="h-3 w-3" />
+                            <span className="text-sm">{feed.targetAudience}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline">{feed.category}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={
+                            feed.status === "approved" ? "default" :
+                            feed.status === "rejected" ? "destructive" : "secondary"
+                          }>
+                            {feed.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {format(new Date(feed.submittedAt), "MMM d, HH:mm")}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <Button variant="ghost" size="sm" onClick={() => openPreview(feed)}>
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            {feed.status === "pending" && (
+                              <>
+                                <Button variant="ghost" size="sm" onClick={() => handleSponsorApprove(feed)}>
+                                  <CheckCircle className="h-4 w-4 text-success" />
+                                </Button>
+                                <Button variant="ghost" size="sm" onClick={() => openRejectDialog(feed)}>
+                                  <XCircle className="h-4 w-4 text-destructive" />
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+
+            {/* Guidelines Card */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5 text-warning" />
+                  Sponsor Content Guidelines
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="p-4 rounded-lg border border-success/30 bg-success/5">
+                    <h4 className="font-medium text-success flex items-center gap-2 mb-2">
+                      <CheckCircle className="h-4 w-4" />
+                      Approve If
+                    </h4>
+                    <ul className="text-sm space-y-1 text-muted-foreground">
+                      <li>• Content is relevant to target audience</li>
+                      <li>• No misleading claims or false information</li>
+                      <li>• Complies with sponsor tier permissions</li>
+                      <li>• Professional tone and language</li>
+                      <li>• Clear call-to-action without pressure</li>
+                    </ul>
+                  </div>
+                  <div className="p-4 rounded-lg border border-destructive/30 bg-destructive/5">
+                    <h4 className="font-medium text-destructive flex items-center gap-2 mb-2">
+                      <XCircle className="h-4 w-4" />
+                      Reject If
+                    </h4>
+                    <ul className="text-sm space-y-1 text-muted-foreground">
+                      <li>• Contains spam or excessive promotion</li>
+                      <li>• Targets unauthorized audience segments</li>
+                      <li>• Violates content policies</li>
+                      <li>• Misleading or inaccurate information</li>
+                      <li>• Exceeds sponsor tier privileges</li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
         {/* Verified Agencies Tab */}
         <TabsContent value="agencies">
           <Card>
@@ -487,6 +711,133 @@ export default function FeedGovernance() {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Sponsor Feed Preview Dialog */}
+      <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Eye className="h-5 w-5" />
+              Sponsor Feed Preview
+            </DialogTitle>
+            <DialogDescription>Review the sponsor content before approving or rejecting</DialogDescription>
+          </DialogHeader>
+          {selectedSponsorFeed && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/50">
+                <span className="text-2xl">{selectedSponsorFeed.sponsorLogo}</span>
+                <div>
+                  <p className="font-medium">{selectedSponsorFeed.sponsor}</p>
+                  <Badge className={sponsorTierColors[selectedSponsorFeed.sponsorTier]}>
+                    {selectedSponsorFeed.sponsorTier} Sponsor
+                  </Badge>
+                </div>
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg">{selectedSponsorFeed.title}</h3>
+                <div className="flex items-center gap-2 mt-1">
+                  <Badge variant="outline">{selectedSponsorFeed.category}</Badge>
+                  <span className="text-sm text-muted-foreground flex items-center gap-1">
+                    <Users className="h-3 w-3" />
+                    {selectedSponsorFeed.targetAudience}
+                  </span>
+                </div>
+              </div>
+              <div className="p-4 rounded-lg border">
+                <p className="text-sm leading-relaxed">{selectedSponsorFeed.content}</p>
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Submitted: {format(new Date(selectedSponsorFeed.submittedAt), "MMMM d, yyyy 'at' h:mm a")}
+              </div>
+            </div>
+          )}
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setIsPreviewOpen(false)}>
+              Close
+            </Button>
+            {selectedSponsorFeed?.status === "pending" && (
+              <>
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    setIsPreviewOpen(false);
+                    if (selectedSponsorFeed) openRejectDialog(selectedSponsorFeed);
+                  }}
+                >
+                  <XCircle className="h-4 w-4 mr-2" />
+                  Reject
+                </Button>
+                <Button onClick={() => selectedSponsorFeed && handleSponsorApprove(selectedSponsorFeed)}>
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  Approve & Publish
+                </Button>
+              </>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Rejection Reason Dialog */}
+      <Dialog open={isRejectDialogOpen} onOpenChange={setIsRejectDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-destructive">
+              <XCircle className="h-5 w-5" />
+              Reject Sponsor Feed
+            </DialogTitle>
+            <DialogDescription>
+              Please provide a reason for rejecting this sponsor content. The sponsor will be notified.
+            </DialogDescription>
+          </DialogHeader>
+          {selectedSponsorFeed && (
+            <div className="space-y-4">
+              <div className="p-3 rounded-lg bg-muted/50">
+                <p className="font-medium text-sm">{selectedSponsorFeed.title}</p>
+                <p className="text-xs text-muted-foreground">by {selectedSponsorFeed.sponsor}</p>
+              </div>
+              <div className="space-y-2">
+                <Label>Rejection Reason</Label>
+                <Textarea
+                  value={rejectionReason}
+                  onChange={(e) => setRejectionReason(e.target.value)}
+                  placeholder="Explain why this content is being rejected..."
+                  rows={4}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Quick Reasons</Label>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    "Content policy violation",
+                    "Misleading information",
+                    "Unauthorized audience",
+                    "Requires revision",
+                    "Exceeds tier privileges",
+                  ].map((reason) => (
+                    <Button
+                      key={reason}
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setRejectionReason(reason)}
+                    >
+                      {reason}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsRejectDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleSponsorReject} disabled={!rejectionReason}>
+              <XCircle className="h-4 w-4 mr-2" />
+              Confirm Rejection
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
