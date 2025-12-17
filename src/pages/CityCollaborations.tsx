@@ -331,34 +331,50 @@ export default function CityCollaborations() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredDepartments.map((dept) => (
-              <Card key={dept.id} className="hover:shadow-md transition-shadow">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="h-12 w-12 rounded-lg bg-secondary flex items-center justify-center">
-                        <Users className="h-6 w-6 text-secondary-foreground" />
-                      </div>
-                      <div>
-                        <CardTitle className="text-base">{dept.name}</CardTitle>
-                        <CardDescription className="text-xs">
-                          {dept.memberCount} members
-                        </CardDescription>
+            {filteredDepartments.map((dept, index) => {
+              // Show status badges on first 3-4 cards, request button on last 2-3
+              const showSendRequest = index >= filteredDepartments.length - 3;
+              const mockStatus: CollaborationStatus = index % 2 === 0 ? "active" : "pending";
+
+              return (
+                <Card key={dept.id} className="hover:shadow-md transition-shadow">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="h-12 w-12 rounded-lg bg-secondary flex items-center justify-center">
+                          <Users className="h-6 w-6 text-secondary-foreground" />
+                        </div>
+                        <div>
+                          <CardTitle className="text-base">{dept.name}</CardTitle>
+                          <CardDescription className="text-xs">
+                            {dept.memberCount} members
+                          </CardDescription>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    {dept.description}
-                  </p>
-                  <Button className="w-full" variant="outline">
-                    <Send className="h-4 w-4 mr-2" />
-                    Request Collaboration
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      {dept.description}
+                    </p>
+                    {!showSendRequest ? (
+                      <Badge className={statusColors[mockStatus]}>
+                        {mockStatus === "active" ? (
+                          <><CheckCircle className="h-3 w-3 mr-1" /> Active Collaboration</>
+                        ) : (
+                          <><Clock className="h-3 w-3 mr-1" /> Request Pending</>
+                        )}
+                      </Badge>
+                    ) : (
+                      <Button className="w-full" variant="outline">
+                        <Send className="h-4 w-4 mr-2" />
+                        Request Collaboration
+                      </Button>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </TabsContent>
 
