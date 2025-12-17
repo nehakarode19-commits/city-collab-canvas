@@ -1,4 +1,4 @@
-import { Home, Building2, Users, Calendar, DollarSign, Award, Heart, Network, BarChart3, Settings, FileText, Building, Trophy, Shield, Hash, ScrollText, UserCog, Briefcase, Handshake, Bot, Megaphone, Tag, Lock, FileCheck, UserCheck } from "lucide-react";
+import { Home, Building2, Users, Calendar, DollarSign, Award, Heart, Network, BarChart3, Settings, FileText, Building, Trophy, Shield, Hash, ScrollText, UserCog, Briefcase, Handshake, Bot, Megaphone } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
   Sidebar,
@@ -28,10 +28,6 @@ const mainNavItems = [
 
 const adminNavItems = [
   { title: "Feed Governance", url: "/feed-governance", icon: Megaphone },
-  { title: "Content Taxonomy", url: "/content-taxonomy", icon: Tag },
-  { title: "Access Control", url: "/access-control", icon: Lock },
-  { title: "Verification", url: "/verification", icon: UserCheck },
-  { title: "Strategic Partners", url: "/strategic-partners", icon: FileCheck },
   { title: "Channel Management", url: "/channels", icon: Hash },
   { title: "Moderation", url: "/moderation", icon: Shield },
   { title: "Legal Disclaimers", url: "/legal-disclaimers", icon: ScrollText },
