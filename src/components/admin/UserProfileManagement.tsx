@@ -19,6 +19,7 @@ interface UserProfile {
   id: string;
   email: string;
   fullName: string;
+  organization: string;
   department: string;
   role: "admin" | "department_manager" | "staff";
   status: "active" | "inactive" | "pending" | "suspended";
@@ -30,12 +31,12 @@ interface UserProfile {
 
 // Mock data for demonstration
 const mockUsers: UserProfile[] = [
-  { id: "1", email: "john.doe@city.gov", fullName: "John Doe", department: "IT", role: "admin", status: "active", verificationStatus: "verified", partnerAccess: true, lastActive: "2024-01-15T10:30:00Z", createdAt: "2023-06-01T00:00:00Z" },
-  { id: "2", email: "jane.smith@city.gov", fullName: "Jane Smith", department: "Finance", role: "department_manager", status: "active", verificationStatus: "verified", partnerAccess: false, lastActive: "2024-01-14T15:45:00Z", createdAt: "2023-07-15T00:00:00Z" },
-  { id: "3", email: "bob.wilson@city.gov", fullName: "Bob Wilson", department: "HR", role: "staff", status: "pending", verificationStatus: "pending", partnerAccess: false, lastActive: "2024-01-10T09:00:00Z", createdAt: "2024-01-05T00:00:00Z" },
-  { id: "4", email: "alice.johnson@city.gov", fullName: "Alice Johnson", department: "Public Works", role: "staff", status: "active", verificationStatus: "self-reported", partnerAccess: false, lastActive: "2024-01-15T08:20:00Z", createdAt: "2023-09-20T00:00:00Z" },
-  { id: "5", email: "mike.brown@city.gov", fullName: "Mike Brown", department: "Parks", role: "department_manager", status: "suspended", verificationStatus: "verified", partnerAccess: true, lastActive: "2024-01-01T12:00:00Z", createdAt: "2023-03-10T00:00:00Z" },
-  { id: "6", email: "sarah.davis@city.gov", fullName: "Sarah Davis", department: "Legal", role: "staff", status: "inactive", verificationStatus: "verified", partnerAccess: false, lastActive: "2023-12-20T14:30:00Z", createdAt: "2023-08-25T00:00:00Z" },
+  { id: "1", email: "john.doe@city.gov", fullName: "John Doe", organization: "Green Earth Initiative", department: "IT", role: "admin", status: "active", verificationStatus: "verified", partnerAccess: true, lastActive: "2024-01-15T10:30:00Z", createdAt: "2023-06-01T00:00:00Z" },
+  { id: "2", email: "jane.smith@city.gov", fullName: "Jane Smith", organization: "Tech for Good", department: "Finance", role: "department_manager", status: "active", verificationStatus: "verified", partnerAccess: false, lastActive: "2024-01-14T15:45:00Z", createdAt: "2023-07-15T00:00:00Z" },
+  { id: "3", email: "bob.wilson@city.gov", fullName: "Bob Wilson", organization: "Urban Gardens Network", department: "HR", role: "staff", status: "pending", verificationStatus: "pending", partnerAccess: false, lastActive: "2024-01-10T09:00:00Z", createdAt: "2024-01-05T00:00:00Z" },
+  { id: "4", email: "alice.johnson@city.gov", fullName: "Alice Johnson", organization: "Youth Education Fund", department: "Public Works", role: "staff", status: "active", verificationStatus: "self-reported", partnerAccess: false, lastActive: "2024-01-15T08:20:00Z", createdAt: "2023-09-20T00:00:00Z" },
+  { id: "5", email: "mike.brown@city.gov", fullName: "Mike Brown", organization: "Community Health Alliance", department: "Parks", role: "department_manager", status: "suspended", verificationStatus: "verified", partnerAccess: true, lastActive: "2024-01-01T12:00:00Z", createdAt: "2023-03-10T00:00:00Z" },
+  { id: "6", email: "sarah.davis@city.gov", fullName: "Sarah Davis", organization: "Environmental Action Group", department: "Legal", role: "staff", status: "inactive", verificationStatus: "verified", partnerAccess: false, lastActive: "2023-12-20T14:30:00Z", createdAt: "2023-08-25T00:00:00Z" },
 ];
 
 const statusConfig = {
@@ -82,10 +83,10 @@ export function UserProfileManagement() {
 
   const handleExport = () => {
     const csv = [
-      ["Email", "Full Name", "Department", "Role", "Status", "Verification", "Partner Access", "Last Active"].join(","),
+      ["Email", "Full Name", "Organization", "Department", "Role", "Status", "Verification", "Partner Access", "Join Date", "Last Active"].join(","),
       ...filteredUsers.map(u => [
-        u.email, u.fullName, u.department, u.role, u.status, 
-        u.verificationStatus, u.partnerAccess ? "Yes" : "No", u.lastActive
+        u.email, u.fullName, u.organization, u.department, u.role, u.status, 
+        u.verificationStatus, u.partnerAccess ? "Yes" : "No", u.createdAt, u.lastActive
       ].join(","))
     ].join("\n");
     
@@ -181,8 +182,10 @@ export function UserProfileManagement() {
             <TableHeader>
               <TableRow>
                 <TableHead>User</TableHead>
+                <TableHead>Organization</TableHead>
                 <TableHead>Department</TableHead>
                 <TableHead>Role</TableHead>
+                <TableHead>Join Date</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Verification</TableHead>
                 <TableHead>Partner Access</TableHead>
@@ -203,10 +206,12 @@ export function UserProfileManagement() {
                         <p className="text-sm text-muted-foreground">{user.email}</p>
                       </div>
                     </TableCell>
+                    <TableCell>{user.organization}</TableCell>
                     <TableCell>{user.department}</TableCell>
                     <TableCell>
                       <Badge variant="outline">{roleLabels[user.role]}</Badge>
                     </TableCell>
+                    <TableCell>{format(new Date(user.createdAt), "MMM d, yyyy")}</TableCell>
                     <TableCell>
                       <Badge variant={statusConf.variant}>{statusConf.label}</Badge>
                     </TableCell>
