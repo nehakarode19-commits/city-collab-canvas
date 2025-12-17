@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RosterManagementTab } from "@/components/membership/RosterManagementTab";
-import { ProfileIntelligenceTab } from "@/components/membership/ProfileIntelligenceTab";
 import { UserProfileManagement } from "@/components/admin/UserProfileManagement";
-import { DataManagementPanel } from "@/components/admin/DataManagementPanel";
-import { Users, Upload, Tags, User, Database } from "lucide-react";
+import { Users, Upload, User } from "lucide-react";
 
 export default function MembershipManagement() {
   const [activeTab, setActiveTab] = useState("roster");
@@ -22,7 +20,7 @@ export default function MembershipManagement() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid">
+        <TabsList className="grid w-full grid-cols-2 lg:w-auto lg:inline-grid">
           <TabsTrigger value="roster" className="flex items-center gap-2">
             <Upload className="h-4 w-4" />
             Roster
@@ -31,14 +29,6 @@ export default function MembershipManagement() {
             <User className="h-4 w-4" />
             User Profiles
           </TabsTrigger>
-          <TabsTrigger value="intelligence" className="flex items-center gap-2">
-            <Tags className="h-4 w-4" />
-            Intelligence
-          </TabsTrigger>
-          <TabsTrigger value="data" className="flex items-center gap-2">
-            <Database className="h-4 w-4" />
-            Data Logs
-          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="roster">
@@ -46,12 +36,6 @@ export default function MembershipManagement() {
         </TabsContent>
         <TabsContent value="profiles">
           <UserProfileManagement />
-        </TabsContent>
-        <TabsContent value="intelligence">
-          <ProfileIntelligenceTab />
-        </TabsContent>
-        <TabsContent value="data">
-          <DataManagementPanel />
         </TabsContent>
       </Tabs>
     </div>
