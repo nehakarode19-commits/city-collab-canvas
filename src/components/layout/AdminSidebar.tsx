@@ -1,4 +1,4 @@
-import { Home, Building2, Users, Calendar, DollarSign, Award, Heart, Network, BarChart3, Settings, FileText, Building, Trophy, Hash, UserCog, Handshake, Bot, Megaphone, Shield } from "lucide-react";
+import { Home, Building2, Users, Calendar, DollarSign, Award, Heart, Network, BarChart3, FileText, Building, Trophy, Hash, Handshake, Bot, Megaphone } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
   Sidebar,
@@ -36,9 +36,6 @@ const adminNavItems = [
 
 const secondaryNavItems = [
   { title: "Reports", url: "/reports", icon: BarChart3 },
-  { title: "User Preferences", url: "/user-preferences", icon: UserCog },
-  { title: "Roles & Permissions", url: "/roles-permissions", icon: Shield },
-  { title: "Admin Settings", url: "/admin-settings", icon: Settings },
 ];
 
 export function AdminSidebar() {
