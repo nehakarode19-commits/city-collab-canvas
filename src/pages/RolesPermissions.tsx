@@ -134,10 +134,14 @@ export default function RolesPermissions() {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList>
+        <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid">
           <TabsTrigger value="overview">Roles Overview</TabsTrigger>
-          <TabsTrigger value="permissions">Permission Control</TabsTrigger>
+          <TabsTrigger value="permissions">Permissions</TabsTrigger>
           <TabsTrigger value="users">User Management</TabsTrigger>
+          <TabsTrigger value="logs" className="flex items-center gap-2">
+            <History className="h-4 w-4" />
+            Migration Logs
+          </TabsTrigger>
         </TabsList>
 
         {/* Roles Overview Tab */}
@@ -288,6 +292,11 @@ export default function RolesPermissions() {
               </Table>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Migration Logs Tab */}
+        <TabsContent value="logs">
+          <RoleMigrationLogs />
         </TabsContent>
       </Tabs>
     </div>

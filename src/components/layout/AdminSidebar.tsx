@@ -41,8 +41,8 @@ const adminNavItems = [
 const secondaryNavItems = [
   { title: "Reports", url: "/reports", icon: BarChart3 },
   { title: "User Preferences", url: "/user-preferences", icon: UserCog },
-  { title: "Settings", url: "/settings", icon: Settings },
-  { title: "Roles & Permissions", url: "/roles-permissions", icon: Settings },
+  { title: "Roles & Permissions", url: "/roles-permissions", icon: Shield },
+  { title: "Admin Settings", url: "/admin-settings", icon: Settings },
 ];
 
 export function AdminSidebar() {
