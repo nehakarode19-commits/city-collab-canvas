@@ -33,7 +33,17 @@ export function ChannelOwnershipTab() {
 
   const queryClient = useQueryClient();
 
-  const { data: ownerships, isLoading } = useQuery({
+  // Mock data for demonstration
+  const mockOwnerships: ChannelOwnership[] = [
+    { id: "1", channel_id: "ch1", user_id: "u1", ownership_date: "2024-01-10T10:00:00Z", is_primary: true, channels: { name: "General Announcements" }, profiles: { full_name: "John Doe", email: "john.doe@city.gov" } },
+    { id: "2", channel_id: "ch2", user_id: "u2", ownership_date: "2024-01-08T14:30:00Z", is_primary: true, channels: { name: "IT Support" }, profiles: { full_name: "Jane Smith", email: "jane.smith@city.gov" } },
+    { id: "3", channel_id: "ch3", user_id: "u3", ownership_date: "2024-01-05T09:15:00Z", is_primary: false, channels: { name: "HR Updates" }, profiles: { full_name: "Mike Johnson", email: "mike.johnson@city.gov" } },
+    { id: "4", channel_id: "ch4", user_id: "u4", ownership_date: "2024-01-03T16:45:00Z", is_primary: true, channels: { name: "Finance Team" }, profiles: { full_name: "Sarah Wilson", email: "sarah.wilson@city.gov" } },
+    { id: "5", channel_id: "ch5", user_id: "u5", ownership_date: "2024-01-01T11:00:00Z", is_primary: true, channels: { name: "Public Works" }, profiles: { full_name: "David Brown", email: "david.brown@city.gov" } },
+    { id: "6", channel_id: "ch1", user_id: "u6", ownership_date: "2023-12-28T08:30:00Z", is_primary: false, channels: { name: "General Announcements" }, profiles: { full_name: "Emily Davis", email: "emily.davis@city.gov" } },
+  ];
+
+  const { data: dbOwnerships, isLoading } = useQuery({
     queryKey: ["channel-ownership"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -48,6 +58,8 @@ export function ChannelOwnershipTab() {
       return data as ChannelOwnership[];
     },
   });
+
+  const ownerships = dbOwnerships?.length ? dbOwnerships : mockOwnerships;
 
   const { data: channels } = useQuery({
     queryKey: ["channels-list"],

@@ -41,7 +41,16 @@ export function UserBansTab() {
 
   const queryClient = useQueryClient();
 
-  const { data: bans, isLoading } = useQuery({
+  // Mock data for demonstration
+  const mockBans: UserBan[] = [
+    { id: "1", user_id: "u1", channel_id: null, banned_by: "admin1", ban_date: "2024-01-15T10:00:00Z", expires_at: null, reason: "Repeated spam violations", is_global: true, profiles: { full_name: "Tom Wilson", email: "tom.wilson@city.gov" }, channels: null, banned_by_profile: { full_name: "Admin User" } },
+    { id: "2", user_id: "u2", channel_id: "ch1", banned_by: "admin1", ban_date: "2024-01-12T14:30:00Z", expires_at: "2024-02-12T14:30:00Z", reason: "Inappropriate content in channel", is_global: false, profiles: { full_name: "Lisa Brown", email: "lisa.brown@city.gov" }, channels: { name: "General Discussion" }, banned_by_profile: { full_name: "Admin User" } },
+    { id: "3", user_id: "u3", channel_id: null, banned_by: "admin2", ban_date: "2024-01-10T09:15:00Z", expires_at: "2024-01-17T09:15:00Z", reason: "Harassment of other users", is_global: true, profiles: { full_name: "Mark Davis", email: "mark.davis@city.gov" }, channels: null, banned_by_profile: { full_name: "Jane Manager" } },
+    { id: "4", user_id: "u4", channel_id: "ch2", banned_by: "admin1", ban_date: "2024-01-08T16:45:00Z", expires_at: null, reason: "Sharing confidential information", is_global: false, profiles: { full_name: "Amy Clark", email: "amy.clark@city.gov" }, channels: { name: "HR Updates" }, banned_by_profile: { full_name: "Admin User" } },
+    { id: "5", user_id: "u5", channel_id: null, banned_by: "admin2", ban_date: "2024-01-05T11:00:00Z", expires_at: "2024-01-12T11:00:00Z", reason: "Multiple policy violations", is_global: true, profiles: { full_name: "Chris Moore", email: "chris.moore@city.gov" }, channels: null, banned_by_profile: { full_name: "Jane Manager" } },
+  ];
+
+  const { data: dbBans, isLoading } = useQuery({
     queryKey: ["user-bans"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -57,6 +66,8 @@ export function UserBansTab() {
       return data as unknown as UserBan[];
     },
   });
+
+  const bans = dbBans?.length ? dbBans : mockBans;
 
   const { data: users } = useQuery({
     queryKey: ["profiles-list"],
