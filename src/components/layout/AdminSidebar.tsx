@@ -26,7 +26,6 @@ const mainNavItems = [
   { title: "Relationships", url: "/relationships", icon: Network },
   { title: "Feed Governance", url: "/feed-governance", icon: Megaphone },
   { title: "Channel Management", url: "/channels", icon: Hash },
-  { title: "Sponsor Analytics", url: "/sponsor-analytics", icon: BarChart3 },
   { title: "City Collaborations", url: "/collaborations", icon: Handshake },
   { title: "GovBot Librarian", url: "/govbot", icon: Bot },
   { title: "Reports", url: "/reports", icon: BarChart3 },
