@@ -58,10 +58,14 @@ const roleLabels = {
   staff: "Staff",
 };
 
+// Get unique organizations from mock data
+const organizations = [...new Set(mockUsers.map(u => u.organization))];
+
 export function UserProfileManagement() {
   const [users] = useState<UserProfile[]>(mockUsers);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [organizationFilter, setOrganizationFilter] = useState<string>("all");
   const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
 
@@ -71,7 +75,8 @@ export function UserProfileManagement() {
       user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.department.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === "all" || user.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    const matchesOrganization = organizationFilter === "all" || user.organization === organizationFilter;
+    return matchesSearch && matchesStatus && matchesOrganization;
   });
 
   const stats = {
@@ -154,6 +159,17 @@ export function UserProfileManagement() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-col sm:flex-row gap-4">
+            <Select value={organizationFilter} onValueChange={setOrganizationFilter}>
+              <SelectTrigger className="w-[220px]">
+                <SelectValue placeholder="Select Organization" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Organizations</SelectItem>
+                {organizations.map((org) => (
+                  <SelectItem key={org} value={org}>{org}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -182,7 +198,6 @@ export function UserProfileManagement() {
             <TableHeader>
               <TableRow>
                 <TableHead>User</TableHead>
-                <TableHead>Organization</TableHead>
                 <TableHead>Department</TableHead>
                 <TableHead>Role</TableHead>
                 <TableHead>Join Date</TableHead>
@@ -206,7 +221,6 @@ export function UserProfileManagement() {
                         <p className="text-sm text-muted-foreground">{user.email}</p>
                       </div>
                     </TableCell>
-                    <TableCell>{user.organization}</TableCell>
                     <TableCell>{user.department}</TableCell>
                     <TableCell>
                       <Badge variant="outline">{roleLabels[user.role]}</Badge>
