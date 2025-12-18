@@ -498,7 +498,7 @@ export function AddMemberModal({ open, onOpenChange }: AddMemberModalProps) {
               Cancel
             </Button>
             <Button onClick={handleSubmit}>
-              Add Government Employee
+              Add Member
             </Button>
           </div>
         </div>
