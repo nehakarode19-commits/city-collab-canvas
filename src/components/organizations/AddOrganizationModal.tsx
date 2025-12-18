@@ -61,6 +61,7 @@ interface AddOrganizationModalProps {
 const organizationTypes = ["Non-Profit", "Government", "Corporate", "Educational", "Religious"];
 const departments = ["Fire", "Police Department", "Emergency Services", "Administration", "Community Outreach"];
 const positions = ["Director", "Manager", "Coordinator", "Volunteer", "Staff"];
+const skills = ["Emergency Response", "Community Outreach", "Administration", "Project Management", "Training & Education", "Public Relations", "IT Support", "Financial Management", "Legal Services", "Healthcare"];
 const legalStatuses = ["Registered", "Non-Registered", "Pending"];
 const publicProfiles = ["Public", "Private", "Internal"];
 
@@ -68,6 +69,7 @@ export function AddOrganizationModal({ open, onOpenChange }: AddOrganizationModa
   const [activeTab, setActiveTab] = useState("basic");
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
   const [selectedPositions, setSelectedPositions] = useState<string[]>([]);
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [bannerPreview, setBannerPreview] = useState<string | null>(null);
   
@@ -192,6 +194,13 @@ export function AddOrganizationModal({ open, onOpenChange }: AddOrganizationModa
     form.setValue("position", updated);
   };
 
+  const toggleSkill = (skill: string) => {
+    const updated = selectedSkills.includes(skill)
+      ? selectedSkills.filter((s) => s !== skill)
+      : [...selectedSkills, skill];
+    setSelectedSkills(updated);
+  };
+
   const onSubmit = async (data: z.infer<typeof basicInfoSchema>) => {
     if (!logoPreview) {
       toast({
@@ -213,6 +222,7 @@ export function AddOrganizationModal({ open, onOpenChange }: AddOrganizationModa
     form.reset();
     setSelectedDepartments([]);
     setSelectedPositions([]);
+    setSelectedSkills([]);
     setLogoPreview(null);
     setBannerPreview(null);
   };
@@ -339,6 +349,28 @@ export function AddOrganizationModal({ open, onOpenChange }: AddOrganizationModa
                       </FormItem>
                     )}
                   />
+
+                  <div className="md:col-span-2">
+                    <FormItem>
+                      <FormLabel>Skills</FormLabel>
+                      <div className="flex flex-wrap gap-2">
+                        {skills.map((skill) => (
+                          <Button
+                            key={skill}
+                            type="button"
+                            variant={selectedSkills.includes(skill) ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => toggleSkill(skill)}
+                          >
+                            {skill}
+                            {selectedSkills.includes(skill) && (
+                              <X className="ml-2 h-3 w-3" />
+                            )}
+                          </Button>
+                        ))}
+                      </div>
+                    </FormItem>
+                  </div>
 
                   <FormField
                     control={form.control}
