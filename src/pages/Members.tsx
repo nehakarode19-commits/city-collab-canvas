@@ -39,7 +39,7 @@ const Members = () => {
             <div className="flex items-center justify-end">
               <Button onClick={() => setAddModalOpen(true)}>
                 <Plus className="h-4 w-4 mr-2" />
-                Add Government Employee
+                Add Member
               </Button>
             </div>
             <UserProfileManagement />
