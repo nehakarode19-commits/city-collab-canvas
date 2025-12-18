@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   Search, CheckCircle, XCircle, Eye, Clock, 
   User, Mail, Building, Calendar, MessageSquare
@@ -89,9 +90,13 @@ const mockInquiries: MemberInquiry[] = [
   },
 ];
 
+// Get unique organizations from mock data
+const organizations = [...new Set(mockInquiries.map(i => i.organization))];
+
 export function MemberInquiriesTab() {
   const [inquiries, setInquiries] = useState<MemberInquiry[]>(mockInquiries);
   const [searchTerm, setSearchTerm] = useState("");
+  const [organizationFilter, setOrganizationFilter] = useState<string>("all");
   const [selectedInquiry, setSelectedInquiry] = useState<MemberInquiry | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false);
@@ -106,7 +111,8 @@ export function MemberInquiriesTab() {
       inquiry.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       inquiry.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       inquiry.organization.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesSearch;
+    const matchesOrganization = organizationFilter === "all" || inquiry.organization === organizationFilter;
+    return matchesSearch && matchesOrganization;
   });
 
   const handleApprove = (id: string) => {
@@ -180,14 +186,27 @@ export function MemberInquiriesTab() {
           <CardDescription>Review and approve incoming membership requests</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search by name, email, or organization..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Select value={organizationFilter} onValueChange={setOrganizationFilter}>
+              <SelectTrigger className="w-[220px]">
+                <SelectValue placeholder="Select Organization" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Organizations</SelectItem>
+                {organizations.map((org) => (
+                  <SelectItem key={org} value={org}>{org}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search by name, email, or organization..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
           </div>
 
           <Table>
