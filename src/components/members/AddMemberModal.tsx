@@ -148,7 +148,7 @@ export function AddMemberModal({ open, onOpenChange }: AddMemberModalProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Member Information</DialogTitle>
+          <DialogTitle>Add Government Employee</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
