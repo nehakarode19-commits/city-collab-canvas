@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, Users, Upload, User } from "lucide-react";
+import { Plus, Users, Upload, User, Inbox } from "lucide-react";
 import { AddMemberModal } from "@/components/members/AddMemberModal";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RosterManagementTab } from "@/components/membership/RosterManagementTab";
 import { UserProfileManagement } from "@/components/admin/UserProfileManagement";
+import { MemberInquiriesTab } from "@/components/members/MemberInquiriesTab";
 
 const Members = () => {
   const [addModalOpen, setAddModalOpen] = useState(false);
@@ -24,10 +25,14 @@ const Members = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList className="grid w-full grid-cols-2 lg:w-auto lg:inline-grid">
+          <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:inline-grid">
             <TabsTrigger value="profiles" className="flex items-center gap-2">
               <User className="h-4 w-4" />
               User Profiles
+            </TabsTrigger>
+            <TabsTrigger value="inquiries" className="flex items-center gap-2">
+              <Inbox className="h-4 w-4" />
+              Member Inquiries
             </TabsTrigger>
             <TabsTrigger value="roster" className="flex items-center gap-2">
               <Upload className="h-4 w-4" />
@@ -43,6 +48,10 @@ const Members = () => {
               </Button>
             </div>
             <UserProfileManagement />
+          </TabsContent>
+
+          <TabsContent value="inquiries">
+            <MemberInquiriesTab />
           </TabsContent>
 
           <TabsContent value="roster">
