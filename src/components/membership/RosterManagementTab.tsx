@@ -4,13 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Upload, Download, FileSpreadsheet, CheckCircle, XCircle, Clock, AlertTriangle, Users, UserMinus, Briefcase } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Upload, Download, FileSpreadsheet, CheckCircle, XCircle, Clock, AlertTriangle, Users } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { toast } from "sonner";
-import { ImportedMembersList, ImportedMember } from "./ImportedMembersList";
 
 interface RosterUpload {
   id: string;
@@ -41,9 +39,6 @@ const statusIcons: Record<string, React.ReactNode> = {
 
 export function RosterManagementTab() {
   const [isDragging, setIsDragging] = useState(false);
-  const [showMemberStatusDialog, setShowMemberStatusDialog] = useState(false);
-  const [memberStatusType, setMemberStatusType] = useState<"retired" | "job_change" | null>(null);
-  const [importedMembers, setImportedMembers] = useState<ImportedMember[]>([]);
 
   // Mock data for demonstration
   const mockUploads: RosterUpload[] = [
@@ -84,11 +79,11 @@ export function RosterManagementTab() {
     setIsDragging(false);
     const files = e.dataTransfer.files;
     if (files.length > 0) {
-      handleFileUpload(files[0], null);
+      handleFileUpload(files[0]);
     }
   }, []);
 
-  const handleFileUpload = (file: File, statusType: "retired" | "job_change" | null) => {
+  const handleFileUpload = (file: File) => {
     // Validate file type
     const validTypes = [
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -99,38 +94,13 @@ export function RosterManagementTab() {
       toast.error("Please upload an Excel or CSV file");
       return;
     }
-
-    // Generate mock imported members based on status type
-    const mockNames = [
-      { name: "Rajesh Kumar", email: "rajesh.kumar@city.gov", dept: "Public Works", prevRole: "Senior Engineer" },
-      { name: "Priya Sharma", email: "priya.sharma@city.gov", dept: "Finance", prevRole: "Budget Analyst" },
-      { name: "Amit Patel", email: "amit.patel@city.gov", dept: "IT", prevRole: "System Administrator" },
-      { name: "Sunita Verma", email: "sunita.verma@city.gov", dept: "HR", prevRole: "HR Manager" },
-      { name: "Vikram Singh", email: "vikram.singh@city.gov", dept: "Parks & Recreation", prevRole: "Park Supervisor" },
-      { name: "Meena Joshi", email: "meena.joshi@city.gov", dept: "Health", prevRole: "Health Inspector" },
-    ];
-
-    const status = statusType || "retired";
-    const newImported: ImportedMember[] = mockNames.map((m, i) => ({
-      id: `imp-${Date.now()}-${i}`,
-      name: m.name,
-      email: m.email,
-      department: m.dept,
-      status: i % 3 === 0 ? "retired" : status,
-      previousRole: m.prevRole,
-      newRole: status === "job_change" && i % 3 !== 0 ? "Transferred to " + ["Admin", "Operations", "Planning"][i % 3] : undefined,
-      importedAt: new Date().toISOString(),
-      fileName: file.name,
-    }));
-
-    setImportedMembers(newImported);
-    toast.success(`${newImported.length} members imported from "${file.name}"`);
+    toast.info(`File "${file.name}" received. Processing would require backend implementation.`);
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      handleFileUpload(files[0], null);
+      handleFileUpload(files[0]);
     }
   };
 
@@ -223,10 +193,20 @@ export function RosterManagementTab() {
               Supported formats: .xlsx, .xls, .csv
             </p>
             <div className="mt-4 flex items-center justify-center gap-4">
-              <Button onClick={() => setShowMemberStatusDialog(true)}>
-                <Upload className="h-4 w-4 mr-2" />
-                Browse Files
-              </Button>
+              <label>
+                <input
+                  type="file"
+                  accept=".xlsx,.xls,.csv"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
+                <Button asChild>
+                  <span>
+                    <Upload className="h-4 w-4 mr-2" />
+                    Browse Files
+                  </span>
+                </Button>
+              </label>
               <Button variant="outline" onClick={downloadTemplate}>
                 <Download className="h-4 w-4 mr-2" />
                 Download Template
@@ -235,10 +215,6 @@ export function RosterManagementTab() {
           </div>
         </CardContent>
       </Card>
-
-      {/* Upload History */}
-      {/* Imported Members List */}
-      <ImportedMembersList members={importedMembers} onClear={() => setImportedMembers([])} />
 
       {/* Upload History */}
       <Card>
@@ -288,64 +264,6 @@ export function RosterManagementTab() {
           )}
         </CardContent>
       </Card>
-      {/* Member Status Dialog */}
-      <Dialog open={showMemberStatusDialog} onOpenChange={setShowMemberStatusDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Member Status Update</DialogTitle>
-            <DialogDescription>
-              Please select the reason for uploading a roster update.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid grid-cols-1 gap-4 py-4">
-            <Button
-              variant={memberStatusType === "retired" ? "default" : "outline"}
-              className="h-auto py-4 flex flex-col items-center gap-2"
-              onClick={() => setMemberStatusType("retired")}
-            >
-              <UserMinus className="h-6 w-6" />
-              <span className="font-medium">Member Retired</span>
-              <span className="text-xs text-muted-foreground">The member has retired from service</span>
-            </Button>
-            <Button
-              variant={memberStatusType === "job_change" ? "default" : "outline"}
-              className="h-auto py-4 flex flex-col items-center gap-2"
-              onClick={() => setMemberStatusType("job_change")}
-            >
-              <Briefcase className="h-6 w-6" />
-              <span className="font-medium">Changed Job</span>
-              <span className="text-xs text-muted-foreground">The member has changed their position or department</span>
-            </Button>
-          </div>
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => { setShowMemberStatusDialog(false); setMemberStatusType(null); }}>
-              Cancel
-            </Button>
-            <label>
-              <input
-                type="file"
-                accept=".xlsx,.xls,.csv"
-                onChange={(e) => {
-                  const files = e.target.files;
-                  if (files && files.length > 0) {
-                    handleFileUpload(files[0], memberStatusType);
-                  }
-                  setShowMemberStatusDialog(false);
-                  setMemberStatusType(null);
-                }}
-                className="hidden"
-                disabled={!memberStatusType}
-              />
-              <Button asChild disabled={!memberStatusType}>
-                <span>
-                  <Upload className="h-4 w-4 mr-2" />
-                  Continue & Upload
-                </span>
-              </Button>
-            </label>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
