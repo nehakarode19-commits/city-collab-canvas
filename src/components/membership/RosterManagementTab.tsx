@@ -43,6 +43,7 @@ export function RosterManagementTab() {
   const [isDragging, setIsDragging] = useState(false);
   const [showMemberStatusDialog, setShowMemberStatusDialog] = useState(false);
   const [memberStatusType, setMemberStatusType] = useState<"retired" | "job_change" | null>(null);
+  const [importedMembers, setImportedMembers] = useState<ImportedMember[]>([]);
 
   // Mock data for demonstration
   const mockUploads: RosterUpload[] = [
