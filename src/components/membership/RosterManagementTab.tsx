@@ -257,6 +257,64 @@ export function RosterManagementTab() {
           )}
         </CardContent>
       </Card>
+      {/* Member Status Dialog */}
+      <Dialog open={showMemberStatusDialog} onOpenChange={setShowMemberStatusDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Member Status Update</DialogTitle>
+            <DialogDescription>
+              Please select the reason for uploading a roster update.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-1 gap-4 py-4">
+            <Button
+              variant={memberStatusType === "retired" ? "default" : "outline"}
+              className="h-auto py-4 flex flex-col items-center gap-2"
+              onClick={() => setMemberStatusType("retired")}
+            >
+              <UserMinus className="h-6 w-6" />
+              <span className="font-medium">Member Retired</span>
+              <span className="text-xs text-muted-foreground">The member has retired from service</span>
+            </Button>
+            <Button
+              variant={memberStatusType === "job_change" ? "default" : "outline"}
+              className="h-auto py-4 flex flex-col items-center gap-2"
+              onClick={() => setMemberStatusType("job_change")}
+            >
+              <Briefcase className="h-6 w-6" />
+              <span className="font-medium">Changed Job</span>
+              <span className="text-xs text-muted-foreground">The member has changed their position or department</span>
+            </Button>
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => { setShowMemberStatusDialog(false); setMemberStatusType(null); }}>
+              Cancel
+            </Button>
+            <label>
+              <input
+                type="file"
+                accept=".xlsx,.xls,.csv"
+                onChange={(e) => {
+                  handleFileSelect(e);
+                  setShowMemberStatusDialog(false);
+                  if (memberStatusType) {
+                    toast.info(`Roster upload marked as: ${memberStatusType === "retired" ? "Member Retired" : "Changed Job"}`);
+                  }
+                  setMemberStatusType(null);
+                }}
+                className="hidden"
+                disabled={!memberStatusType}
+              />
+              <Button asChild disabled={!memberStatusType}>
+                <span>
+                  <Upload className="h-4 w-4 mr-2" />
+                  Continue & Upload
+                </span>
+              </Button>
+            </label>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
