@@ -130,7 +130,7 @@ export function RosterManagementTab() {
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      handleFileUpload(files[0]);
+      handleFileUpload(files[0], null);
     }
   };
 
