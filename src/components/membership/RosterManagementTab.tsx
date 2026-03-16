@@ -121,12 +121,8 @@ export function RosterManagementTab() {
           const retiredDate = String(row["Retired Date"] || row["retired_date"] || row["Retirement Date"] || "");
           const newOrganization = String(row["New Organization"] || row["new_organization"] || "");
 
-          let status: ImportedMember["status"] = "active";
-          if (rawStatus.includes("retire")) status = "retired";
-          else if (rawStatus.includes("job") || rawStatus.includes("change") || rawStatus.includes("moved") || rawStatus.includes("transferred")) status = "job_changed";
-          else if (rawStatus.includes("new")) status = "new";
-          else if (rawStatus.includes("active")) status = "active";
-          else if (rawStatus.includes("unchanged") || rawStatus.includes("same")) status = "unchanged";
+          // Use the selected category for all records
+          const status: ImportedMember["status"] = importCategory || "active";
 
           return {
             name,
