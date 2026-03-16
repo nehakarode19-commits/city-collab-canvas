@@ -84,7 +84,7 @@ export function RosterManagementTab() {
     setIsDragging(false);
     const files = e.dataTransfer.files;
     if (files.length > 0) {
-      handleFileUpload(files[0]);
+      handleFileUpload(files[0], null);
     }
   }, []);
 
