@@ -326,11 +326,11 @@ export function RosterManagementTab() {
                 type="file"
                 accept=".xlsx,.xls,.csv"
                 onChange={(e) => {
-                  handleFileSelect(e);
-                  setShowMemberStatusDialog(false);
-                  if (memberStatusType) {
-                    toast.info(`Roster upload marked as: ${memberStatusType === "retired" ? "Member Retired" : "Changed Job"}`);
+                  const files = e.target.files;
+                  if (files && files.length > 0) {
+                    handleFileUpload(files[0], memberStatusType);
                   }
+                  setShowMemberStatusDialog(false);
                   setMemberStatusType(null);
                 }}
                 className="hidden"
