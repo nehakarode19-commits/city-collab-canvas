@@ -172,6 +172,19 @@ export function RosterManagementTab() {
     if (files && files.length > 0) {
       handleFileUpload(files[0]);
     }
+    // Reset so same file can be selected again
+    if (e.target) e.target.value = "";
+  };
+
+  const handleBrowseClick = () => {
+    setShowCategoryPopup(true);
+  };
+
+  const handleCategorySelect = (category: "retired" | "job_changed") => {
+    setImportCategory(category);
+    setShowCategoryPopup(false);
+    // Trigger file picker after category selection
+    setTimeout(() => fileInputRef.current?.click(), 100);
   };
 
   const downloadTemplate = () => {
