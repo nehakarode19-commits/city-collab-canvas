@@ -45,6 +45,9 @@ export function RosterManagementTab() {
   const [importedMembers, setImportedMembers] = useState<ImportedMember[]>([]);
   const [importFileName, setImportFileName] = useState("");
   const [showResults, setShowResults] = useState(false);
+  const [showCategoryPopup, setShowCategoryPopup] = useState(false);
+  const [importCategory, setImportCategory] = useState<"retired" | "job_changed" | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Mock data for demonstration
   const mockUploads: RosterUpload[] = [
