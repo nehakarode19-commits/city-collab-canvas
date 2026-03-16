@@ -196,8 +196,8 @@ export function RosterManagementTab() {
       }
     : { total: 0, new: 0, updated: 0, deactivated: 0 };
 
-  const handleConfirmImport = () => {
-    toast.success(`Successfully imported ${importedMembers.length} records`);
+  const handleConfirmImport = (updatedMembers: ImportedMember[]) => {
+    toast.success(`Successfully imported ${updatedMembers.length} records`);
     setShowResults(false);
     setImportedMembers([]);
     setImportFileName("");
