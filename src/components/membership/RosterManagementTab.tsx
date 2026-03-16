@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Upload, Download, FileSpreadsheet, CheckCircle, XCircle, Clock, AlertTriangle, Users, UserX, Briefcase } from "lucide-react";
+import { Upload, Download, FileSpreadsheet, CheckCircle, XCircle, Clock, AlertTriangle, Users } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
