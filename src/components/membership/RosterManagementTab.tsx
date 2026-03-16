@@ -1,10 +1,11 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Upload, Download, FileSpreadsheet, CheckCircle, XCircle, Clock, AlertTriangle, Users } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Upload, Download, FileSpreadsheet, CheckCircle, XCircle, Clock, AlertTriangle, Users, UserX, Briefcase } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
@@ -44,6 +45,9 @@ export function RosterManagementTab() {
   const [importedMembers, setImportedMembers] = useState<ImportedMember[]>([]);
   const [importFileName, setImportFileName] = useState("");
   const [showResults, setShowResults] = useState(false);
+  const [showCategoryPopup, setShowCategoryPopup] = useState(false);
+  const [importCategory, setImportCategory] = useState<"retired" | "job_changed" | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Mock data for demonstration
   const mockUploads: RosterUpload[] = [
@@ -117,12 +121,8 @@ export function RosterManagementTab() {
           const retiredDate = String(row["Retired Date"] || row["retired_date"] || row["Retirement Date"] || "");
           const newOrganization = String(row["New Organization"] || row["new_organization"] || "");
 
-          let status: ImportedMember["status"] = "active";
-          if (rawStatus.includes("retire")) status = "retired";
-          else if (rawStatus.includes("job") || rawStatus.includes("change") || rawStatus.includes("moved") || rawStatus.includes("transferred")) status = "job_changed";
-          else if (rawStatus.includes("new")) status = "new";
-          else if (rawStatus.includes("active")) status = "active";
-          else if (rawStatus.includes("unchanged") || rawStatus.includes("same")) status = "unchanged";
+          // Use the selected category for all records
+          const status: ImportedMember["status"] = importCategory || "active";
 
           return {
             name,
@@ -172,6 +172,19 @@ export function RosterManagementTab() {
     if (files && files.length > 0) {
       handleFileUpload(files[0]);
     }
+    // Reset so same file can be selected again
+    if (e.target) e.target.value = "";
+  };
+
+  const handleBrowseClick = () => {
+    setShowCategoryPopup(true);
+  };
+
+  const handleCategorySelect = (category: "retired" | "job_changed") => {
+    setImportCategory(category);
+    setShowCategoryPopup(false);
+    // Trigger file picker after category selection
+    setTimeout(() => fileInputRef.current?.click(), 100);
   };
 
   const downloadTemplate = () => {
@@ -221,6 +234,45 @@ export function RosterManagementTab() {
         fileName={importFileName}
         onConfirmImport={handleConfirmImport}
       />
+
+      {/* Category Selection Popup */}
+      <Dialog open={showCategoryPopup} onOpenChange={setShowCategoryPopup}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Select Import Type</DialogTitle>
+            <DialogDescription>
+              Choose the type of member data you want to import
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-4 py-4">
+            <button
+              onClick={() => handleCategorySelect("retired")}
+              className="flex flex-col items-center gap-3 p-6 rounded-lg border-2 border-muted hover:border-destructive hover:bg-destructive/5 transition-all cursor-pointer group"
+            >
+              <div className="h-14 w-14 rounded-full bg-destructive/10 flex items-center justify-center group-hover:bg-destructive/20 transition-colors">
+                <UserX className="h-7 w-7 text-destructive" />
+              </div>
+              <div className="text-center">
+                <p className="font-semibold text-foreground">Retired Member</p>
+                <p className="text-xs text-muted-foreground mt-1">Import list of retired members</p>
+              </div>
+            </button>
+            <button
+              onClick={() => handleCategorySelect("job_changed")}
+              className="flex flex-col items-center gap-3 p-6 rounded-lg border-2 border-muted hover:border-warning hover:bg-warning/5 transition-all cursor-pointer group"
+            >
+              <div className="h-14 w-14 rounded-full bg-warning/10 flex items-center justify-center group-hover:bg-warning/20 transition-colors">
+                <Briefcase className="h-7 w-7 text-warning" />
+              </div>
+              <div className="text-center">
+                <p className="font-semibold text-foreground">Change Member</p>
+                <p className="text-xs text-muted-foreground mt-1">Import members who changed jobs</p>
+              </div>
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <div className="space-y-6">
         {/* Stats from last upload */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -285,20 +337,17 @@ export function RosterManagementTab() {
                 Supported formats: .xlsx, .xls, .csv
               </p>
               <div className="mt-4 flex items-center justify-center gap-4">
-                <label>
-                  <input
-                    type="file"
-                    accept=".xlsx,.xls,.csv"
-                    onChange={handleFileSelect}
-                    className="hidden"
-                  />
-                  <Button asChild>
-                    <span>
-                      <Upload className="h-4 w-4 mr-2" />
-                      Browse Files
-                    </span>
-                  </Button>
-                </label>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".xlsx,.xls,.csv"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
+                <Button onClick={handleBrowseClick}>
+                  <Upload className="h-4 w-4 mr-2" />
+                  Browse Files
+                </Button>
                 <Button variant="outline" onClick={downloadTemplate}>
                   <Download className="h-4 w-4 mr-2" />
                   Download Template
