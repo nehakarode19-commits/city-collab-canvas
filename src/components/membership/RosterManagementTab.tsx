@@ -117,7 +117,7 @@ export function RosterManagementTab() {
           const retiredDate = String(row["Retired Date"] || row["retired_date"] || row["Retirement Date"] || "");
           const newOrganization = String(row["New Organization"] || row["new_organization"] || "");
 
-          const status: ImportedMember["status"] = importCategory || "active";
+          const status: ImportedMember["status"] = "active";
 
           return {
             name,
