@@ -198,6 +198,20 @@ export function RosterManagementTab() {
       }
     : { total: 0, new: 0, updated: 0, deactivated: 0 };
 
+  if (showResults && importedMembers.length > 0) {
+    return (
+      <ImportResultsTable
+        members={importedMembers}
+        fileName={importFileName}
+        onClose={() => {
+          setShowResults(false);
+          setImportedMembers([]);
+          setImportFileName("");
+        }}
+      />
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Stats from last upload */}
