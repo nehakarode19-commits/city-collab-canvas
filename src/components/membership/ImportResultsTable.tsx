@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
-import { Search, Users, UserX, Briefcase, CheckCircle, AlertTriangle, X, FileSpreadsheet, Upload } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Search, Users, UserX, Briefcase, FileSpreadsheet, Upload } from "lucide-react";
 import { toast } from "sonner";
 
 export interface ImportedMember {
@@ -29,25 +29,14 @@ interface ImportPreviewDialogProps {
   onOpenChange: (open: boolean) => void;
   members: ImportedMember[];
   fileName: string;
-  onConfirmImport: () => void;
+  onConfirmImport: (members: ImportedMember[]) => void;
 }
-
-const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
-  active: { label: "Active", variant: "default", icon: <CheckCircle className="h-3 w-3" /> },
-  retired: { label: "Retired", variant: "destructive", icon: <UserX className="h-3 w-3" /> },
-  job_changed: { label: "Job Changed", variant: "outline", icon: <Briefcase className="h-3 w-3" /> },
-  new: { label: "New Member", variant: "secondary", icon: <Users className="h-3 w-3" /> },
-  unchanged: { label: "Unchanged", variant: "outline", icon: <CheckCircle className="h-3 w-3" /> },
-};
 
 export function ImportPreviewDialog({ open, onOpenChange, members, fileName, onConfirmImport }: ImportPreviewDialogProps) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-
-  const retiredCount = members.filter(m => m.status === "retired").length;
-  const jobChangedCount = members.filter(m => m.status === "job_changed").length;
-  const newCount = members.filter(m => m.status === "new").length;
-  const activeCount = members.filter(m => m.status === "active" || m.status === "unchanged").length;
+  const [memberStatuses, setMemberStatuses] = useState<Record<number, "retired" | "job_changed">>({});
+  const [selectedMembers, setSelectedMembers] = useState<Set<number>>(new Set());
+  const [selectAll, setSelectAll] = useState(false);
 
   const filteredMembers = members.filter(member => {
     const matchesSearch =
@@ -55,9 +44,69 @@ export function ImportPreviewDialog({ open, onOpenChange, members, fileName, onC
       (member.email || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
       (member.department || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
       (member.organization || "").toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === "all" || member.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    return matchesSearch;
   });
+
+  const retiredCount = Object.values(memberStatuses).filter(s => s === "retired").length;
+  const changedCount = Object.values(memberStatuses).filter(s => s === "job_changed").length;
+  const unassignedCount = members.length - Object.keys(memberStatuses).length;
+
+  const handleStatusChange = (index: number, status: "retired" | "job_changed") => {
+    setMemberStatuses(prev => {
+      const next = { ...prev };
+      if (next[index] === status) {
+        delete next[index];
+      } else {
+        next[index] = status;
+      }
+      return next;
+    });
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    setSelectAll(checked);
+    if (checked) {
+      const allIndices = new Set(members.map((_, i) => i));
+      setSelectedMembers(allIndices);
+    } else {
+      setSelectedMembers(new Set());
+    }
+  };
+
+  const handleSelectMember = (index: number, checked: boolean) => {
+    setSelectedMembers(prev => {
+      const next = new Set(prev);
+      if (checked) next.add(index);
+      else next.delete(index);
+      return next;
+    });
+    if (!checked) setSelectAll(false);
+  };
+
+  const handleBulkAssign = (status: "retired" | "job_changed") => {
+    if (selectedMembers.size === 0) {
+      toast.error("Please select members first");
+      return;
+    }
+    setMemberStatuses(prev => {
+      const next = { ...prev };
+      selectedMembers.forEach(i => { next[i] = status; });
+      return next;
+    });
+    toast.success(`${selectedMembers.size} members marked as ${status === "retired" ? "Retired" : "Change Member"}`);
+  };
+
+  const handleConfirm = () => {
+    if (Object.keys(memberStatuses).length === 0) {
+      toast.error("Please assign status to at least one member");
+      return;
+    }
+    const updatedMembers = members.map((m, i) => ({
+      ...m,
+      status: memberStatuses[i] || m.status,
+    }));
+    onConfirmImport(updatedMembers);
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -68,18 +117,12 @@ export function ImportPreviewDialog({ open, onOpenChange, members, fileName, onC
             Preview — {fileName}
           </DialogTitle>
           <DialogDescription>
-            Review the data below before importing. Total {members.length} records found.
+            Assign each member as Retired or Change Member. Total {members.length} records found.
           </DialogDescription>
         </DialogHeader>
 
         {/* Stats Row */}
-        <div className="grid grid-cols-4 gap-3">
-          <div className="rounded-lg border p-3 text-center">
-            <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground mb-1">
-              <CheckCircle className="h-3 w-3 text-success" /> Active
-            </div>
-            <span className="text-xl font-bold text-success">{activeCount}</span>
-          </div>
+        <div className="grid grid-cols-3 gap-3">
           <div className="rounded-lg border p-3 text-center">
             <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground mb-1">
               <UserX className="h-3 w-3 text-destructive" /> Retired
@@ -88,32 +131,45 @@ export function ImportPreviewDialog({ open, onOpenChange, members, fileName, onC
           </div>
           <div className="rounded-lg border p-3 text-center">
             <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground mb-1">
-              <Briefcase className="h-3 w-3 text-warning" /> Job Changed
+              <Briefcase className="h-3 w-3 text-warning" /> Change Member
             </div>
-            <span className="text-xl font-bold text-warning">{jobChangedCount}</span>
+            <span className="text-xl font-bold text-warning">{changedCount}</span>
           </div>
           <div className="rounded-lg border p-3 text-center">
             <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground mb-1">
-              <Users className="h-3 w-3 text-primary" /> New
+              <Users className="h-3 w-3 text-muted-foreground" /> Unassigned
             </div>
-            <span className="text-xl font-bold text-primary">{newCount}</span>
+            <span className="text-xl font-bold text-muted-foreground">{unassignedCount}</span>
           </div>
         </div>
 
-        {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Filter by Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="retired">Retired</SelectItem>
-              <SelectItem value="job_changed">Job Changed</SelectItem>
-              <SelectItem value="new">New Member</SelectItem>
-            </SelectContent>
-          </Select>
+        {/* Bulk Actions */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-muted-foreground">
+              {selectedMembers.size} selected
+            </span>
+            <Button
+              size="sm"
+              variant="outline"
+              className="border-destructive text-destructive hover:bg-destructive/10"
+              onClick={() => handleBulkAssign("retired")}
+              disabled={selectedMembers.size === 0}
+            >
+              <UserX className="h-3.5 w-3.5 mr-1" />
+              Mark Retired
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="border-warning text-warning hover:bg-warning/10"
+              onClick={() => handleBulkAssign("job_changed")}
+              disabled={selectedMembers.size === 0}
+            >
+              <Briefcase className="h-3.5 w-3.5 mr-1" />
+              Mark Change
+            </Button>
+          </div>
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -130,15 +186,20 @@ export function ImportPreviewDialog({ open, onOpenChange, members, fileName, onC
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="sticky top-0 bg-background w-[40px]">
+                  <Checkbox
+                    checked={selectAll}
+                    onCheckedChange={(checked) => handleSelectAll(!!checked)}
+                  />
+                </TableHead>
                 <TableHead className="sticky top-0 bg-background">#</TableHead>
                 <TableHead className="sticky top-0 bg-background">Name</TableHead>
                 <TableHead className="sticky top-0 bg-background">Email</TableHead>
                 <TableHead className="sticky top-0 bg-background">Organization</TableHead>
                 <TableHead className="sticky top-0 bg-background">Department</TableHead>
-                <TableHead className="sticky top-0 bg-background">Role / Position</TableHead>
+                <TableHead className="sticky top-0 bg-background">Role</TableHead>
                 <TableHead className="sticky top-0 bg-background">Phone</TableHead>
-                <TableHead className="sticky top-0 bg-background">Status</TableHead>
-                <TableHead className="sticky top-0 bg-background">Details</TableHead>
+                <TableHead className="sticky top-0 bg-background min-w-[180px]">Assign Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -149,54 +210,59 @@ export function ImportPreviewDialog({ open, onOpenChange, members, fileName, onC
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredMembers.map((member, index) => {
-                  const config = statusConfig[member.status] || statusConfig.active;
+                filteredMembers.map((member, idx) => {
+                  const realIndex = members.indexOf(member);
+                  const assignedStatus = memberStatuses[realIndex];
                   return (
                     <TableRow
-                      key={index}
+                      key={realIndex}
                       className={
-                        member.status === "retired" ? "bg-destructive/5" :
-                        member.status === "job_changed" ? "bg-warning/5" :
-                        member.status === "new" ? "bg-primary/5" : ""
+                        assignedStatus === "retired" ? "bg-destructive/5" :
+                        assignedStatus === "job_changed" ? "bg-warning/5" : ""
                       }
                     >
-                      <TableCell className="text-muted-foreground text-xs">{index + 1}</TableCell>
+                      <TableCell>
+                        <Checkbox
+                          checked={selectedMembers.has(realIndex)}
+                          onCheckedChange={(checked) => handleSelectMember(realIndex, !!checked)}
+                        />
+                      </TableCell>
+                      <TableCell className="text-muted-foreground text-xs">{realIndex + 1}</TableCell>
                       <TableCell className="font-medium">{member.name || "—"}</TableCell>
                       <TableCell className="text-sm">{member.email || "—"}</TableCell>
                       <TableCell>{member.organization || "—"}</TableCell>
-                      <TableCell>
-                        <div>
-                          <span>{member.department || "—"}</span>
-                          {member.status === "job_changed" && member.previousDepartment && (
-                            <div className="text-xs text-muted-foreground line-through">{member.previousDepartment}</div>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <span>{member.role || "—"}</span>
-                          {member.status === "job_changed" && member.previousRole && (
-                            <div className="text-xs text-muted-foreground line-through">{member.previousRole}</div>
-                          )}
-                        </div>
-                      </TableCell>
+                      <TableCell>{member.department || "—"}</TableCell>
+                      <TableCell>{member.role || "—"}</TableCell>
                       <TableCell className="text-sm">{member.phone || "—"}</TableCell>
                       <TableCell>
-                        <Badge variant={config.variant} className="flex items-center gap-1 w-fit text-xs">
-                          {config.icon}
-                          {config.label}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-xs text-muted-foreground max-w-[150px]">
-                        {member.status === "retired" && member.retiredDate && (
-                          <span>Retired: {member.retiredDate}</span>
-                        )}
-                        {member.status === "job_changed" && member.newOrganization && (
-                          <span>Moved to: {member.newOrganization}</span>
-                        )}
-                        {member.status === "job_changed" && !member.newOrganization && member.previousRole && (
-                          <span>Was: {member.previousRole}</span>
-                        )}
+                        <div className="flex items-center gap-1.5">
+                          <Button
+                            size="sm"
+                            variant={assignedStatus === "retired" ? "default" : "outline"}
+                            className={
+                              assignedStatus === "retired"
+                                ? "bg-destructive text-destructive-foreground hover:bg-destructive/90 h-7 text-xs px-2"
+                                : "h-7 text-xs px-2 border-destructive/30 text-destructive hover:bg-destructive/10"
+                            }
+                            onClick={() => handleStatusChange(realIndex, "retired")}
+                          >
+                            <UserX className="h-3 w-3 mr-1" />
+                            Retired
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant={assignedStatus === "job_changed" ? "default" : "outline"}
+                            className={
+                              assignedStatus === "job_changed"
+                                ? "bg-warning text-warning-foreground hover:bg-warning/90 h-7 text-xs px-2"
+                                : "h-7 text-xs px-2 border-warning/30 text-warning hover:bg-warning/10"
+                            }
+                            onClick={() => handleStatusChange(realIndex, "job_changed")}
+                          >
+                            <Briefcase className="h-3 w-3 mr-1" />
+                            Change
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   );
@@ -207,16 +273,16 @@ export function ImportPreviewDialog({ open, onOpenChange, members, fileName, onC
         </div>
 
         <p className="text-xs text-muted-foreground">
-          Showing {filteredMembers.length} of {members.length} records
+          Showing {filteredMembers.length} of {members.length} records • {retiredCount} Retired • {changedCount} Changed • {unassignedCount} Unassigned
         </p>
 
         <DialogFooter className="gap-2 sm:gap-0">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={onConfirmImport}>
+          <Button onClick={handleConfirm}>
             <Upload className="h-4 w-4 mr-2" />
-            Confirm Import ({members.length} records)
+            Confirm Import ({Object.keys(memberStatuses).length} assigned)
           </Button>
         </DialogFooter>
       </DialogContent>

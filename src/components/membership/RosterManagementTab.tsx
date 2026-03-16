@@ -4,8 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Upload, Download, FileSpreadsheet, CheckCircle, XCircle, Clock, AlertTriangle, Users, UserX, Briefcase } from "lucide-react";
+import { Upload, Download, FileSpreadsheet, CheckCircle, XCircle, Clock, AlertTriangle, Users } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
@@ -44,8 +43,6 @@ export function RosterManagementTab() {
   const [importedMembers, setImportedMembers] = useState<ImportedMember[]>([]);
   const [importFileName, setImportFileName] = useState("");
   const [showResults, setShowResults] = useState(false);
-  const [showCategoryPopup, setShowCategoryPopup] = useState(false);
-  const [importCategory, setImportCategory] = useState<"retired" | "job_changed" | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Mock data for demonstration
@@ -119,7 +116,7 @@ export function RosterManagementTab() {
           const retiredDate = String(row["Retired Date"] || row["retired_date"] || row["Retirement Date"] || "");
           const newOrganization = String(row["New Organization"] || row["new_organization"] || "");
 
-          const status: ImportedMember["status"] = importCategory || "active";
+          const status: ImportedMember["status"] = "active";
 
           return {
             name,
@@ -170,14 +167,7 @@ export function RosterManagementTab() {
   };
 
   const handleBrowseClick = () => {
-    setShowCategoryPopup(true);
-  };
-
-  const handleCategorySelect = (category: "retired" | "job_changed") => {
-    setImportCategory(category);
-    setShowCategoryPopup(false);
-    // Trigger file picker after category selection
-    setTimeout(() => fileInputRef.current?.click(), 100);
+    fileInputRef.current?.click();
   };
 
   const downloadTemplate = () => {
@@ -205,8 +195,8 @@ export function RosterManagementTab() {
       }
     : { total: 0, new: 0, updated: 0, deactivated: 0 };
 
-  const handleConfirmImport = () => {
-    toast.success(`Successfully imported ${importedMembers.length} records`);
+  const handleConfirmImport = (updatedMembers: ImportedMember[]) => {
+    toast.success(`Successfully imported ${updatedMembers.length} records`);
     setShowResults(false);
     setImportedMembers([]);
     setImportFileName("");
@@ -228,43 +218,6 @@ export function RosterManagementTab() {
         onConfirmImport={handleConfirmImport}
       />
 
-      {/* Category Selection Popup */}
-      <Dialog open={showCategoryPopup} onOpenChange={setShowCategoryPopup}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Select Import Type</DialogTitle>
-            <DialogDescription>
-              Choose the type of member data you want to import
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid grid-cols-2 gap-4 py-4">
-            <button
-              onClick={() => handleCategorySelect("retired")}
-              className="flex flex-col items-center gap-3 p-6 rounded-lg border-2 border-muted hover:border-destructive hover:bg-destructive/5 transition-all cursor-pointer group"
-            >
-              <div className="h-14 w-14 rounded-full bg-destructive/10 flex items-center justify-center group-hover:bg-destructive/20 transition-colors">
-                <UserX className="h-7 w-7 text-destructive" />
-              </div>
-              <div className="text-center">
-                <p className="font-semibold text-foreground">Retired Member</p>
-                <p className="text-xs text-muted-foreground mt-1">Import list of retired members</p>
-              </div>
-            </button>
-            <button
-              onClick={() => handleCategorySelect("job_changed")}
-              className="flex flex-col items-center gap-3 p-6 rounded-lg border-2 border-muted hover:border-warning hover:bg-warning/5 transition-all cursor-pointer group"
-            >
-              <div className="h-14 w-14 rounded-full bg-warning/10 flex items-center justify-center group-hover:bg-warning/20 transition-colors">
-                <Briefcase className="h-7 w-7 text-warning" />
-              </div>
-              <div className="text-center">
-                <p className="font-semibold text-foreground">Change Member</p>
-                <p className="text-xs text-muted-foreground mt-1">Import members who changed jobs</p>
-              </div>
-            </button>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       <div className="space-y-6">
         {/* Stats from last upload */}
