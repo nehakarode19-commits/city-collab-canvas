@@ -88,18 +88,83 @@ export function RosterManagementTab() {
     }
   }, []);
 
+  const parseExcelFile = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = e.target?.result;
+        const workbook = XLSX.read(data, { type: "binary" });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json<Record<string, unknown>>(worksheet);
+
+        if (jsonData.length === 0) {
+          toast.error("The file is empty or has no valid data");
+          return;
+        }
+
+        // Map Excel columns to ImportedMember structure
+        const members: ImportedMember[] = jsonData.map((row) => {
+          const name = String(row["Name"] || row["Full Name"] || row["full_name"] || row["name"] || "");
+          const email = String(row["Email"] || row["email"] || row["E-mail"] || "");
+          const department = String(row["Department"] || row["department"] || row["Dept"] || "");
+          const role = String(row["Role"] || row["Position"] || row["role"] || row["position"] || row["Title"] || "");
+          const organization = String(row["Organization"] || row["organization"] || row["Org"] || row["Company"] || "");
+          const phone = String(row["Phone"] || row["phone"] || row["Contact"] || "");
+          const rawStatus = String(row["Status"] || row["status"] || row["Member Status"] || "active").toLowerCase().trim();
+          const previousRole = String(row["Previous Role"] || row["previous_role"] || row["Old Role"] || row["Old Position"] || "");
+          const previousDepartment = String(row["Previous Department"] || row["previous_department"] || row["Old Department"] || "");
+          const retiredDate = String(row["Retired Date"] || row["retired_date"] || row["Retirement Date"] || "");
+          const newOrganization = String(row["New Organization"] || row["new_organization"] || "");
+
+          let status: ImportedMember["status"] = "active";
+          if (rawStatus.includes("retire")) status = "retired";
+          else if (rawStatus.includes("job") || rawStatus.includes("change") || rawStatus.includes("moved") || rawStatus.includes("transferred")) status = "job_changed";
+          else if (rawStatus.includes("new")) status = "new";
+          else if (rawStatus.includes("active")) status = "active";
+          else if (rawStatus.includes("unchanged") || rawStatus.includes("same")) status = "unchanged";
+
+          return {
+            name,
+            email,
+            department,
+            role,
+            organization,
+            phone,
+            status,
+            previousRole: previousRole !== "undefined" && previousRole !== "" ? previousRole : undefined,
+            previousDepartment: previousDepartment !== "undefined" && previousDepartment !== "" ? previousDepartment : undefined,
+            retiredDate: retiredDate !== "undefined" && retiredDate !== "" ? retiredDate : undefined,
+            newOrganization: newOrganization !== "undefined" && newOrganization !== "" ? newOrganization : undefined,
+          };
+        });
+
+        setImportedMembers(members);
+        setImportFileName(file.name);
+        setShowResults(true);
+
+        const retired = members.filter(m => m.status === "retired").length;
+        const jobChanged = members.filter(m => m.status === "job_changed").length;
+        toast.success(`Imported ${members.length} records — ${retired} retired, ${jobChanged} job changed`);
+      } catch (err) {
+        toast.error("Failed to parse the file. Please check the format.");
+        console.error("Excel parse error:", err);
+      }
+    };
+    reader.readAsBinaryString(file);
+  };
+
   const handleFileUpload = (file: File) => {
-    // Validate file type
     const validTypes = [
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       "application/vnd.ms-excel",
       "text/csv",
     ];
-    if (!validTypes.includes(file.type)) {
+    if (!validTypes.includes(file.type) && !file.name.match(/\.(xlsx|xls|csv)$/i)) {
       toast.error("Please upload an Excel or CSV file");
       return;
     }
-    toast.info(`File "${file.name}" received. Processing would require backend implementation.`);
+    parseExcelFile(file);
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
