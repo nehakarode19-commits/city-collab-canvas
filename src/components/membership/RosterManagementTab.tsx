@@ -237,6 +237,10 @@ export function RosterManagementTab() {
       </Card>
 
       {/* Upload History */}
+      {/* Imported Members List */}
+      <ImportedMembersList members={importedMembers} onClear={() => setImportedMembers([])} />
+
+      {/* Upload History */}
       <Card>
         <CardHeader>
           <CardTitle>Upload History</CardTitle>
