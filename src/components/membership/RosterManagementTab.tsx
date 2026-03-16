@@ -219,43 +219,6 @@ export function RosterManagementTab() {
         onConfirmImport={handleConfirmImport}
       />
 
-      {/* Category Selection Popup */}
-      <Dialog open={showCategoryPopup} onOpenChange={setShowCategoryPopup}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Select Import Type</DialogTitle>
-            <DialogDescription>
-              Choose the type of member data you want to import
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid grid-cols-2 gap-4 py-4">
-            <button
-              onClick={() => handleCategorySelect("retired")}
-              className="flex flex-col items-center gap-3 p-6 rounded-lg border-2 border-muted hover:border-destructive hover:bg-destructive/5 transition-all cursor-pointer group"
-            >
-              <div className="h-14 w-14 rounded-full bg-destructive/10 flex items-center justify-center group-hover:bg-destructive/20 transition-colors">
-                <UserX className="h-7 w-7 text-destructive" />
-              </div>
-              <div className="text-center">
-                <p className="font-semibold text-foreground">Retired Member</p>
-                <p className="text-xs text-muted-foreground mt-1">Import list of retired members</p>
-              </div>
-            </button>
-            <button
-              onClick={() => handleCategorySelect("job_changed")}
-              className="flex flex-col items-center gap-3 p-6 rounded-lg border-2 border-muted hover:border-warning hover:bg-warning/5 transition-all cursor-pointer group"
-            >
-              <div className="h-14 w-14 rounded-full bg-warning/10 flex items-center justify-center group-hover:bg-warning/20 transition-colors">
-                <Briefcase className="h-7 w-7 text-warning" />
-              </div>
-              <div className="text-center">
-                <p className="font-semibold text-foreground">Change Member</p>
-                <p className="text-xs text-muted-foreground mt-1">Import members who changed jobs</p>
-              </div>
-            </button>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       <div className="space-y-6">
         {/* Stats from last upload */}
