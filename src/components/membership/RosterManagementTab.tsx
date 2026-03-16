@@ -168,14 +168,7 @@ export function RosterManagementTab() {
   };
 
   const handleBrowseClick = () => {
-    setShowCategoryPopup(true);
-  };
-
-  const handleCategorySelect = (category: "retired" | "job_changed") => {
-    setImportCategory(category);
-    setShowCategoryPopup(false);
-    // Trigger file picker after category selection
-    setTimeout(() => fileInputRef.current?.click(), 100);
+    fileInputRef.current?.click();
   };
 
   const downloadTemplate = () => {
