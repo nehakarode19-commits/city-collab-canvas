@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Upload, Download, FileSpreadsheet, CheckCircle, XCircle, Clock, AlertTriangle, Users } from "lucide-react";
+import { Upload, Download, FileSpreadsheet, CheckCircle, XCircle, Clock, AlertTriangle, Users, UserMinus, Briefcase } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
@@ -39,6 +40,8 @@ const statusIcons: Record<string, React.ReactNode> = {
 
 export function RosterManagementTab() {
   const [isDragging, setIsDragging] = useState(false);
+  const [showMemberStatusDialog, setShowMemberStatusDialog] = useState(false);
+  const [memberStatusType, setMemberStatusType] = useState<"retired" | "job_change" | null>(null);
 
   // Mock data for demonstration
   const mockUploads: RosterUpload[] = [
@@ -193,20 +196,10 @@ export function RosterManagementTab() {
               Supported formats: .xlsx, .xls, .csv
             </p>
             <div className="mt-4 flex items-center justify-center gap-4">
-              <label>
-                <input
-                  type="file"
-                  accept=".xlsx,.xls,.csv"
-                  onChange={handleFileSelect}
-                  className="hidden"
-                />
-                <Button asChild>
-                  <span>
-                    <Upload className="h-4 w-4 mr-2" />
-                    Browse Files
-                  </span>
-                </Button>
-              </label>
+              <Button onClick={() => setShowMemberStatusDialog(true)}>
+                <Upload className="h-4 w-4 mr-2" />
+                Browse Files
+              </Button>
               <Button variant="outline" onClick={downloadTemplate}>
                 <Download className="h-4 w-4 mr-2" />
                 Download Template
@@ -264,6 +257,64 @@ export function RosterManagementTab() {
           )}
         </CardContent>
       </Card>
+      {/* Member Status Dialog */}
+      <Dialog open={showMemberStatusDialog} onOpenChange={setShowMemberStatusDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Member Status Update</DialogTitle>
+            <DialogDescription>
+              Please select the reason for uploading a roster update.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-1 gap-4 py-4">
+            <Button
+              variant={memberStatusType === "retired" ? "default" : "outline"}
+              className="h-auto py-4 flex flex-col items-center gap-2"
+              onClick={() => setMemberStatusType("retired")}
+            >
+              <UserMinus className="h-6 w-6" />
+              <span className="font-medium">Member Retired</span>
+              <span className="text-xs text-muted-foreground">The member has retired from service</span>
+            </Button>
+            <Button
+              variant={memberStatusType === "job_change" ? "default" : "outline"}
+              className="h-auto py-4 flex flex-col items-center gap-2"
+              onClick={() => setMemberStatusType("job_change")}
+            >
+              <Briefcase className="h-6 w-6" />
+              <span className="font-medium">Changed Job</span>
+              <span className="text-xs text-muted-foreground">The member has changed their position or department</span>
+            </Button>
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => { setShowMemberStatusDialog(false); setMemberStatusType(null); }}>
+              Cancel
+            </Button>
+            <label>
+              <input
+                type="file"
+                accept=".xlsx,.xls,.csv"
+                onChange={(e) => {
+                  handleFileSelect(e);
+                  setShowMemberStatusDialog(false);
+                  if (memberStatusType) {
+                    toast.info(`Roster upload marked as: ${memberStatusType === "retired" ? "Member Retired" : "Changed Job"}`);
+                  }
+                  setMemberStatusType(null);
+                }}
+                className="hidden"
+                disabled={!memberStatusType}
+              />
+              <Button asChild disabled={!memberStatusType}>
+                <span>
+                  <Upload className="h-4 w-4 mr-2" />
+                  Continue & Upload
+                </span>
+              </Button>
+            </label>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
