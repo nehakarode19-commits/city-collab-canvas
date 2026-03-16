@@ -196,20 +196,10 @@ export function RosterManagementTab() {
               Supported formats: .xlsx, .xls, .csv
             </p>
             <div className="mt-4 flex items-center justify-center gap-4">
-              <label>
-                <input
-                  type="file"
-                  accept=".xlsx,.xls,.csv"
-                  onChange={handleFileSelect}
-                  className="hidden"
-                />
-                <Button asChild>
-                  <span>
-                    <Upload className="h-4 w-4 mr-2" />
-                    Browse Files
-                  </span>
-                </Button>
-              </label>
+              <Button onClick={() => setShowMemberStatusDialog(true)}>
+                <Upload className="h-4 w-4 mr-2" />
+                Browse Files
+              </Button>
               <Button variant="outline" onClick={downloadTemplate}>
                 <Download className="h-4 w-4 mr-2" />
                 Download Template
