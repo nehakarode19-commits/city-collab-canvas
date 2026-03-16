@@ -93,9 +93,10 @@ export function RosterManagementTab() {
 
   const parseExcelFile = (file: File) => {
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       try {
         const data = e.target?.result;
+        const XLSX = await import("xlsx");
         const workbook = XLSX.read(data, { type: "binary" });
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
@@ -106,7 +107,6 @@ export function RosterManagementTab() {
           return;
         }
 
-        // Map Excel columns to ImportedMember structure
         const members: ImportedMember[] = jsonData.map((row) => {
           const name = String(row["Name"] || row["Full Name"] || row["full_name"] || row["name"] || "");
           const email = String(row["Email"] || row["email"] || row["E-mail"] || "");
@@ -114,13 +114,11 @@ export function RosterManagementTab() {
           const role = String(row["Role"] || row["Position"] || row["role"] || row["position"] || row["Title"] || "");
           const organization = String(row["Organization"] || row["organization"] || row["Org"] || row["Company"] || "");
           const phone = String(row["Phone"] || row["phone"] || row["Contact"] || "");
-          const rawStatus = String(row["Status"] || row["status"] || row["Member Status"] || "active").toLowerCase().trim();
           const previousRole = String(row["Previous Role"] || row["previous_role"] || row["Old Role"] || row["Old Position"] || "");
           const previousDepartment = String(row["Previous Department"] || row["previous_department"] || row["Old Department"] || "");
           const retiredDate = String(row["Retired Date"] || row["retired_date"] || row["Retirement Date"] || "");
           const newOrganization = String(row["New Organization"] || row["new_organization"] || "");
 
-          // Use the selected category for all records
           const status: ImportedMember["status"] = importCategory || "active";
 
           return {
@@ -141,12 +139,8 @@ export function RosterManagementTab() {
         setImportedMembers(members);
         setImportFileName(file.name);
         setShowResults(true);
-
-        const retired = members.filter(m => m.status === "retired").length;
-        const jobChanged = members.filter(m => m.status === "job_changed").length;
-        toast.success(`Imported ${members.length} records — ${retired} retired, ${jobChanged} job changed`);
       } catch (err) {
-        toast.error("Failed to parse the file. Please check the format.");
+        toast.error("Failed to read the file. Please try again.");
         console.error("Excel parse error:", err);
       }
     };
