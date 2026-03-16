@@ -40,6 +40,8 @@ const statusIcons: Record<string, React.ReactNode> = {
 
 export function RosterManagementTab() {
   const [isDragging, setIsDragging] = useState(false);
+  const [showMemberStatusDialog, setShowMemberStatusDialog] = useState(false);
+  const [memberStatusType, setMemberStatusType] = useState<"retired" | "job_change" | null>(null);
 
   // Mock data for demonstration
   const mockUploads: RosterUpload[] = [
