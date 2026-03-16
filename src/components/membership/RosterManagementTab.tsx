@@ -41,6 +41,9 @@ const statusIcons: Record<string, React.ReactNode> = {
 
 export function RosterManagementTab() {
   const [isDragging, setIsDragging] = useState(false);
+  const [importedMembers, setImportedMembers] = useState<ImportedMember[]>([]);
+  const [importFileName, setImportFileName] = useState("");
+  const [showResults, setShowResults] = useState(false);
 
   // Mock data for demonstration
   const mockUploads: RosterUpload[] = [
