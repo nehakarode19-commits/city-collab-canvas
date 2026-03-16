@@ -88,7 +88,7 @@ export function RosterManagementTab() {
     }
   }, []);
 
-  const handleFileUpload = (file: File) => {
+  const handleFileUpload = (file: File, statusType: "retired" | "job_change" | null) => {
     // Validate file type
     const validTypes = [
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -99,7 +99,32 @@ export function RosterManagementTab() {
       toast.error("Please upload an Excel or CSV file");
       return;
     }
-    toast.info(`File "${file.name}" received. Processing would require backend implementation.`);
+
+    // Generate mock imported members based on status type
+    const mockNames = [
+      { name: "Rajesh Kumar", email: "rajesh.kumar@city.gov", dept: "Public Works", prevRole: "Senior Engineer" },
+      { name: "Priya Sharma", email: "priya.sharma@city.gov", dept: "Finance", prevRole: "Budget Analyst" },
+      { name: "Amit Patel", email: "amit.patel@city.gov", dept: "IT", prevRole: "System Administrator" },
+      { name: "Sunita Verma", email: "sunita.verma@city.gov", dept: "HR", prevRole: "HR Manager" },
+      { name: "Vikram Singh", email: "vikram.singh@city.gov", dept: "Parks & Recreation", prevRole: "Park Supervisor" },
+      { name: "Meena Joshi", email: "meena.joshi@city.gov", dept: "Health", prevRole: "Health Inspector" },
+    ];
+
+    const status = statusType || "retired";
+    const newImported: ImportedMember[] = mockNames.map((m, i) => ({
+      id: `imp-${Date.now()}-${i}`,
+      name: m.name,
+      email: m.email,
+      department: m.dept,
+      status: i % 3 === 0 ? "retired" : status,
+      previousRole: m.prevRole,
+      newRole: status === "job_change" && i % 3 !== 0 ? "Transferred to " + ["Admin", "Operations", "Planning"][i % 3] : undefined,
+      importedAt: new Date().toISOString(),
+      fileName: file.name,
+    }));
+
+    setImportedMembers(newImported);
+    toast.success(`${newImported.length} members imported from "${file.name}"`);
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
