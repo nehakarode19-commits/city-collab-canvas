@@ -175,10 +175,11 @@ export function RosterManagementTab() {
   };
 
   const downloadTemplate = () => {
-    // Create a simple CSV template
-    const headers = "Email,Full Name,Department,Role\n";
-    const example = "john.doe@city.gov,John Doe,IT,Staff\n";
-    const blob = new Blob([headers + example], { type: "text/csv" });
+    const headers = "Name,Email,Department,Role,Organization,Phone,Status,Previous Role,Previous Department,Retired Date,New Organization\n";
+    const ex1 = "John Doe,john.doe@city.gov,IT,Staff,City of Springfield,(555) 123-4567,active,,,\n";
+    const ex2 = "Jane Smith,jane@city.gov,Finance,Analyst,City of Riverside,(555) 234-5678,retired,,,2024-01-01,\n";
+    const ex3 = "Bob Lee,bob@city.gov,HR,Manager,City of Lakewood,(555) 345-6789,job_changed,Developer,IT,,City of Oakdale\n";
+    const blob = new Blob([headers + ex1 + ex2 + ex3], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
